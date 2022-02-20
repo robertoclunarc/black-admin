@@ -5,3 +5,9 @@ export  interface IPayload{
     _car?: string;   
     _niv?: number;
 }
+
+export interface IparametrosGrales{
+    idParametro?: number;
+    fechaAct: string;
+    iva: number;
+}

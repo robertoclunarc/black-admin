@@ -10,6 +10,9 @@ export const environment = {
   empresasUrl: 'http://localhost:3000/empresas/',
   sucursalesUrl: 'http://localhost:3000/sucursales/',
   compraMaterialesUrl: 'http://localhost:3000/compras/',
+  parametrosUrl: 'http://localhost:3000/parametros/',
+  tasasCambiosUrl: 'http://localhost:3000/tasas/',
+  materiaPrimaUrl: 'http://localhost:3000/materiasprima/',
 };
 
 /*
