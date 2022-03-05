@@ -6,7 +6,8 @@ import { Routes, RouterModule } from "@angular/router";
 import { AdminLayoutComponent } from "./layouts/admin-layout/admin-layout.component";
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 
-import { CompraMaterialesComponent } from './components/compramateriales/compramateriales.component';
+//import { CompraMaterialesComponent } from './components/compramateriales/compramateriales.component';
+//import { ProductosComponent } from './components/productos/productos.component'
 
 const routes: Routes = [
   {
@@ -18,7 +19,13 @@ const routes: Routes = [
     path: "compramateriales",
     component: CompraMaterialesComponent,
     pathMatch: "full"
-  },*/ 
+  },
+  {
+    path: "productos",
+    component: ProductosComponent,
+    pathMatch: "full"
+  },*/
+
   {
     path: "",
     component: AdminLayoutComponent,

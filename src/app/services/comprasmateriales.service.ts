@@ -99,6 +99,16 @@ export class MaterialesCompradosService {
 		);
 	}
 
+	eliminarDetalleTodo(id: number) {
+		const url = `${this.url}detalles/eliminar/todo/${id}`;
+
+		return this.http.delete(url).pipe(
+			tap(result => { console.log(result);
+			}),
+			catchError(this.handleError('error eliminando todos los detalles compra', []))
+		);
+	}
+
 
 	private handleError<T>(operation = 'operation', result?: T) {
 		return (error: any): Observable<T> => {

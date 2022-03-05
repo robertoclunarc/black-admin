@@ -7,8 +7,7 @@ export interface IMaterialesComprados{
     idCompra?: number;
     fechaCompra?: string;
     tasaDia?: number;
-    fkMoneda?: number;
-    total?: number;
+    fkMoneda?: number;    
     subtotal?: number;
     iva?: number;
     montoIva?: number;
@@ -32,7 +31,7 @@ export interface IdetallesCompras{
 export interface IDetallesCompra{
     fkcompra?: number;
     idDetCompra?: number;
-    MateriaPrima: ImateriPrima;
+    MateriaPrima?: ImateriPrima;
     cantidad?: number;
     unidad?: string;
     precioUnitario?: number;
@@ -40,11 +39,11 @@ export interface IDetallesCompra{
 }
 
 export interface IdetallesComprasConMateriales{
-    compra: IMaterialesComprados;
-    moneda: IMoneda;
-    proveedor: IProveedores;
-    sucursal:ISucursal;
-    detalles: IDetallesCompra[];    
+    compra?: IMaterialesComprados;
+    moneda?: IMoneda;
+    proveedor?: IProveedores;
+    sucursal?:ISucursal;
+    detalles?: IDetallesCompra[];    
 }
 
 export interface IfitroCompras{

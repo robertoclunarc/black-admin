@@ -15,6 +15,7 @@ import { TypographyComponent } from "../../pages/typography/typography.component
 // import { RtlComponent } from "../../pages/rtl/rtl.component";
 
 import { CompraMaterialesComponent } from "../../components/compramateriales/compramateriales.component";
+import { ProductosComponent } from "../../components/productos/productos.component";
 
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
@@ -37,6 +38,7 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     // RtlComponent
 
     CompraMaterialesComponent,
+    ProductosComponent,
   ]
 })
 export class AdminLayoutModule {}

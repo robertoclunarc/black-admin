@@ -9,6 +9,7 @@ import { TablesComponent } from "../../pages/tables/tables.component";
 import { TypographyComponent } from "../../pages/typography/typography.component";
 //import { RtlComponent } from "../../pages/rtl/rtl.component";
 import { CompraMaterialesComponent } from "../../components/compramateriales/compramateriales.component";
+import { ProductosComponent } from "../../components/productos/productos.component";
 
 export const AdminLayoutRoutes: Routes = [
   { path: "dashboard", component: DashboardComponent },
@@ -21,5 +22,6 @@ export const AdminLayoutRoutes: Routes = [
   { path: "Prueba", component: TypographyComponent },
   //{ path: "rtl", component: RtlComponent },
 
-  { path: "compramateriales", component: CompraMaterialesComponent }
+  { path: "compramateriales", component: CompraMaterialesComponent },
+  { path: "productos", component: ProductosComponent },
 ];

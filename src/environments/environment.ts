@@ -13,6 +13,9 @@ export const environment = {
   parametrosUrl: 'http://localhost:3000/parametros/',
   tasasCambiosUrl: 'http://localhost:3000/tasas/',
   materiaPrimaUrl: 'http://localhost:3000/materiasprima/',
+  preciosUrl: 'http://localhost:3000/precios/',
+  unidadesUrl: 'http://localhost:3000/unidades/',
+  inventarioUrl: 'http://localhost:3000/inventarios/',
 };
 
 /*

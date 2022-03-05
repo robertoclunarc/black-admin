@@ -1,4 +1,4 @@
-import { IUsuarios } from '../models/usuarios';
+import { IUsuarios, IUsuarioSucursal } from '../models/usuarios';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
@@ -21,6 +21,15 @@ export class UsuariosService {
 			.pipe(
 				tap(result => this.log(`fetched Usuarios`)),
 				catchError(this.handleError('consultarTodos', []))
+			);
+	}
+
+	usuariosPorSucursales(): Observable<IUsuarioSucursal[]> {
+
+		return this.http.get<IUsuarioSucursal[]>(this.url + 'sucursales')
+			.pipe(
+				tap(result => this.log(`fetched UsuarioSucursales (${result.length})`)),
+				catchError(this.handleError('usuariosPorSucursales', []))
 			);
 	}
     
