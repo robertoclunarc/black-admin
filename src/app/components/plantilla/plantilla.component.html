@@ -3,10 +3,10 @@
       <div class=" col-md-12">
         <div class=" card">
           <div class=" card-header">
-            <h6 class=" title d-inline">Productos({{itemsProductos}})</h6>
+            <h6 class=" title d-inline">Productos(##)</h6>
             
             <div class=" btn-group btn-group-toggle float-right"  data-toggle="buttons">
-            <label class=" btn btn-sm btn-danger btn-simple" (click)="clicked=true" [ngClass]="{'active':clicked===true}">
+            <label class=" btn btn-sm btn-danger btn-simple" (click)="clicked=true" >
               <input checked="checked"  name="options" type="radio" />
   
               <span class=" d-none d-sm-block d-md-block d-lg-block d-xl-block">
@@ -25,31 +25,24 @@
                 <thead class=" text-primary">
                   <tr>
                     <th>Ver</th>
-                    <th *ngFor="let t of titulos">{{ t }}</th>
-                    
+                    <th></th>
+                    <th></th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let prd of arrayProductosMateriales">
+                  <tr >
                     <td>
                       <!--
-                        descripcionProducto? : string;
-    fechaProduccion?: string;
-    imagenProducto?: string;
-    fkSucursal?: number;    
-    marca?: string;
                       <a href="javascript:void(0)" (click)="verModalDetalles(cmp)" ><i class=" tim-icons icon-bullet-list-67"> </i></a> 
                       -->
                       <button title="Ver Detalles de Compra" class=" btn btn-icon btn-round btn-google"  href="javascript:void(0)">
                         <i class=" tim-icons icon-bullet-list-67"> </i>
                       </button>
                     </td>
-                    <td>{{ prd.producto.imagenProducto }}</td>
-                    <td>{{ prd.producto.idProducto }}</td>
-                    <td>{{ prd.producto.descripcionProducto }}</td>
-                    <td>{{ prd.producto.marca }}</td>
-                    <td>{{ prd.producto.precio}} {{prd.moneda.abrevMoneda}}</td>                    
-                    <td>{{prd.sucursal.nombreSucursal}}</td>                   
+                    <td>dfdfdfh</td>
+                    <td>dfhdf</td>
+                    <td>hdfhdfh</td>
                     
                   </tr>              
                   

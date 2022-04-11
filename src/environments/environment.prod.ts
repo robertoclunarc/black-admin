@@ -12,4 +12,5 @@ export const environment = {
   preciosUrl: 'http://localhost:3000/precios/',
   unidadesUrl: 'http://localhost:3000/unidades/',
   inventarioUrl: 'http://localhost:3000/inventarios/',
+  productosUrl: 'http://localhost:3000/productos/',
 };
