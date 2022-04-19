@@ -1,6 +1,7 @@
 import { ImateriPrima } from './materiaprima';
-import { ISucursal } from './sucursales';
+//import { ISucursal } from './sucursales';
 import { IMoneda } from './monedas';
+import { IUsuarioSucursal } from './usuarios'
 
 export interface IProductos{ 
     idProducto ?: number;
@@ -8,10 +9,13 @@ export interface IProductos{
     fechaProduccion?: string;
     imagenProducto?: string;
     fkSucursal?: number;    
-    marca?: string;
+    marcaProducto?: string;
     retieneIva_prod?: boolean;
+    iva?: number;
+    montoIva?: number;
     precio?: number;
     fkMoneda?: number;
+    tasaDiaProd?: number;
 }
 
 export interface IdetProducto{   
@@ -25,6 +29,6 @@ export interface IdetProducto{
 export interface IdetProductosConMateriales{    
     producto?:IProductos
     materiaPrima?: IdetProducto[];  
-    sucursal?: ISucursal,
+    usuarioSucursal?: IUsuarioSucursal
     moneda?: IMoneda,
 }

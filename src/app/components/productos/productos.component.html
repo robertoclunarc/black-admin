@@ -40,7 +40,7 @@
     marca?: string;
                       <a href="javascript:void(0)" (click)="verModalDetalles(cmp)" ><i class=" tim-icons icon-bullet-list-67"> </i></a> 
                       -->
-                      <button title="Ver Detalles de Compra" class=" btn btn-icon btn-round btn-google"  href="javascript:void(0)">
+                      <button title="Ver Detalles de Compra" class=" btn btn-icon btn-round btn-google" (click)="verDetalles(content, prd)" href="javascript:void(0)">
                         <i class=" tim-icons icon-bullet-list-67"> </i>
                       </button>
                     </td>
@@ -48,8 +48,8 @@
                     <td>{{ prd.producto.idProducto }}</td>
                     <td>{{ prd.producto.descripcionProducto }}</td>
                     <td>{{ prd.producto.marca }}</td>
-                    <td>{{ prd.producto.precio}} {{prd.moneda.abrevMoneda}}</td>                    
-                    <td>{{prd.sucursal.nombreSucursal}}</td>                   
+                    <td>{{ prd.producto.precio }} {{prd.moneda.abrevMoneda }}</td>                    
+                    <td>{{ prd.usuarioSucursal.sucursal.nombreSucursal }}</td>                   
                     
                   </tr>              
                   
@@ -67,7 +67,7 @@
                         <div class=" card-header"><h5 class=" title">Detalles de Compra
                           <div class=" typography-line">                                      
                             <p  class=" text-success">
-                              ID Compra: ##                                        
+                              ID Compra: {{ productosMateriales.producto.idProducto }}                                        
                             </p>
                           </div></h5>
                         </div>
@@ -83,7 +83,7 @@
                                     disabled=""
                                     placeholder="Company"
                                     type="text"
-                                    
+                                    [(ngModel)]="productosMateriales.usuarioSucursal.sucursal.nombreSucursal"
                                   />
                                 </div>
                               </div>
@@ -96,7 +96,7 @@
                                     name="txtUserName"
                                     placeholder="Username"
                                     type="text"
-                                   
+                                    [(ngModel)]="productosMateriales.producto.loginCrea"
                                   />
                                 </div>
                               </div>
@@ -105,8 +105,8 @@
                                   <label for="txtfecha"> Fecha </label>
                                   <input name="txtFecha"
                                     disabled=""
-                                    class=" form-control"
-                                    
+                                    class="form-control"
+                                    [(ngModel)]="productosMateriales.producto.fechaProduccion"
                                     placeholder=""
                                     type="date"
                                   />
@@ -116,46 +116,97 @@
                             <div class=" row">
                               <div class=" col-md-3 pr-md-1">
                                 <div class=" form-group">
-                                  <label> Proveedor </label>
-                                  <select class=" form-control" style="color: blueviolet"  placeholder="Company">
-                                    <option value="">Seleccione Un Proveedor</option>
-                                    <option   ></option>
-                                  </select>
+                                  <label> Producto </label>
+                                  <input
+                                    class=" form-control"
+                                    disabled=""
+                                    name="txtDescripcionProducto"
+                                    placeholder="Descripcion de Producto"
+                                    type="text"
+                                    [(ngModel)]="productosMateriales.producto.descripcionProducto"
+                                  />
                                   
                                 </div>
                               </div>
                               <div class=" col-md-3 px-md-1">
                                 <div class=" form-group">
-                                  <label> Iva (%)</label>
+                                  <label> Marca/Descripcion</label>
                                   <input
-                                    class=" form-control"
-                                    placeholder="Ultimo Iva"
-                                    type="text" name="txtIva" id="txtIva"
-                                    
+                                    class="form-control"
+                                    placeholder="Marca"
+                                    type="text" name="txtMarca" id="txtMarca"
+                                    [(ngModel)]="productosMateriales.producto.marcaProducto"
                                   />
                                 </div>
                               </div>
                               
                               <div class=" col-md-3 pr-md-1">
                                 <div class=" form-group">
-                                  <label> Moneda </label>
-                                  <select class=" form-control"  name="cboMonedas" id="cboMonedas"    style="color:blueviolet" > 
-                                    <option value="">Seleccione Moneda</option>                                             
-                                    <option  > 
-                                      </option>
-                                  </select>
+                                  <label> Imagen </label>
+                                  <input
+                                    class="form-control"
+                                    placeholder="imagen del producto"
+                                    type="text" name="txtimagenProducto" id="txtimagenProducto"
+                                    [(ngModel)]="productosMateriales.producto.imagenProducto"
+                                  />
                                   
                                 </div>
                               </div>
                               <div class=" col-md-3 px-md-1">
+                                <label> Precio </label>
+                                  <input
+                                    class="form-control"
+                                    placeholder="Precio"
+                                    type="text" name="txtPrecio" id="txtPrecio"
+                                    [(ngModel)]="productosMateriales.producto.precio"
+                                  />
+                              </div>
+                            </div>
+                            <div class=" row">
+                              <div class=" col-md-3 pr-md-1">
+                                <div class=" form-group">
+                                  <label> Monto Iva </label>
+                                  <input
+                                    class="form-control"
+                                    placeholder="Ultimo Monto Iva"
+                                    type="text" name="txtMontoIva" id="txtMontoIva"
+                                    [(ngModel)]="productosMateriales.producto.montoIva"
+                                  />
+                                </div>
+                              </div>
+                              <div class=" col-md-3 px-md-1">
+                                <div class=" form-group">
+                                  <label> Iva (%)</label>
+                                  <input
+                                    class="form-control"
+                                    placeholder="Ultimo Iva"
+                                    type="text" name="txtIva" id="txtIva"
+                                    [(ngModel)]="productosMateriales.producto.iva"
+                                  />
+                                </div>
+                              </div>
+                              
+                              <div class=" col-md-3 pr-md-1">
                                 <div class=" form-group">
                                   <label> Tasa </label>
                                   <input name="txtTasaDia" id="txtTasaDia" 
                                     class=" form-control"
                                     placeholder="Tasa del Dia"
                                     type="text"
-                                    value=""
+                                    [(ngModel)]="productosMateriales.producto.tasaDiaProd"
                                   />
+                                  
+                                </div>
+                              </div>
+                              <div class=" col-md-3 px-md-1">
+                                <div class=" form-group">
+                                  
+                                  <label> Moneda </label>
+                                  <select class=" form-control"  name="cboMonedas" id="cboMonedas"  [(ngModel)]="productosMateriales.producto.fkMoneda"  style="color:blueviolet" > 
+                                    <option value="">Seleccione Moneda</option>                                             
+                                    <option  > 
+                                      </option>
+                                  </select>
                                 </div>
                               </div>
                             </div>
@@ -163,7 +214,7 @@
                               
                                 <div class=" card-header">
                                   <h6 class=" title d-inline">Detalles(44) </h6>
-                                  <p class=" card-category d-inline"> productos</p>
+                                  <p class=" card-category d-inline"> Materiales</p>
                                 </div>
                                 <div class=" card-body">
                                   <div class=" table-full-width table-responsive">
@@ -171,28 +222,37 @@
                                       <tbody>
                                         <tr>                                                    
                                           <td>
-                                            <label>Productos </label>
-                                            <select class=" form-control" style="color: blueviolet" name="cboMaterial" [ >
-                                              <option value="">Seleccione Materia</option>                                             
+                                            <label>Material </label>
+                                            <select class=" form-control" style="color: blueviolet" name="cboMaterial" >
+                                              <option value="">Seleccione Material</option>                                             
                                               <option > 
                                                   </option>
                                             </select>
                                           </td>
                                           <td>
-                                            <label> Precio Unit. </label>
-                                            <input class=" form-control" name="txtPrecioUnit"  placeholder="P. Unitario" value="0.0" type="number"/>
+                                            <label>Cantidad </label>
+                                            <input class=" form-control" name="txtCantidad"  placeholder="cantidad" value="0.0" type="number"/>
                                           </td>                                          
                                           <td>
-                                            <label> SubTotal </label>
-                                            <input class=" form-control" name="txtSubtotal" readonly  placeholder="Prec x Cant"  value="0.0" type="text"/>
+                                            <label>Unidad Medida</label>
+                                            <select class=" form-control" style="color: blueviolet" name="cboMaterial" >
+                                              <option value="">Seleccione Unidad</option>                                             
+                                              <option > 
+                                                  </option>
+                                            </select>
                                           </td>
+                                          <td>
+                                            <label>Precio </label>
+                                            <input class=" form-control" name="txtPrecioUnit"  placeholder="P. Unitario" value="0.0" disabled="" type="number"/>
+                                          </td> 
                                           <td class=" td-actions text-right">
-                                            <button class=" btn btn-link" type="button" placement="left" ngbTooltip="Agregar Item" container="body" >
+                                            <button class=" btn btn-link" type="button" placement="left" ngbTooltip="Agregar Item" container="body"  >
                                               <i class=" tim-icons icon-pencil"> </i>
                                             </button>
                                           </td>
                                         </tr>                                                 
                                         <tr >                                          
+                                          <td></td>
                                           <td></td>
                                           <td></td>
                                           <td></td>                                                    
