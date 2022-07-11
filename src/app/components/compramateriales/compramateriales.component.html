@@ -164,24 +164,63 @@
                                   <table class=" table">
                                     <tbody>
                                       <tr>                                                    
+                                        <th colspan="2"><label>Materiales/Productos </label> </th>
+                                        <th><label> Precio Unit. </label> </th>
+                                        <th><label> Cantidad </label></th>
+                                        <th><label> Unidad </label> </th>
+                                        <th><label> SubTotal </label> </th>                                        
+                                        <th></th>
+                                        <th></th>
+                                      </tr>
+                                      <tr>                                                    
                                         <td>
-                                          <label>Materiales/Productos </label>
-                                          <select class=" form-control" style="color: blueviolet" name="cboMaterial" [(ngModel)]="selectedMateriasPrima.idMateriaPrima" (change)="buscarPrecio($event.target.value)" >
-                                            <option value="">Seleccione Materia</option>                                             
-                                            <option *ngFor="let mat of arrayMateriasPrima; let i=index" [value]="mat.idMateriaPrima"> 
-                                                {{mat.descripcion + ' ' + mat.marca}}</option>
-                                          </select>
+                                          
+                                          <div *ngIf="!nuevoMaterial">
+                                            <select class=" form-control" style="color: blueviolet" name="cboMaterial" [(ngModel)]="selectedMateriasPrima.idMateriaPrima" (change)="buscarPrecio($event.target.value)" >
+                                              <option value="">Seleccione Materia</option>                                             
+                                              <option *ngFor="let mat of arrayMateriasPrima; let i=index" [value]="mat.idMateriaPrima"> 
+                                                  {{mat.descripcion + ' ' + mat.marca}}</option>
+                                            </select> 
+                                          </div>
+
+                                          <div *ngIf="nuevoMaterial">
+                                            <input class=" form-control" name="txtdescMaterial" [(ngModel)]="nuevaMateriasPrima.descripcion" placeholder="Descripcion Material"  type="text"/>
+                                            <input class=" form-control" name="txtMarcaMaterial" [(ngModel)]="nuevaMateriasPrima.marca" placeholder="Marca Material"  type="text"/>
+                                            
+                                            <div class=" form-check">
+                                              <label class=" form-check-label">
+                                                <input
+                                                 [(ngModel)]="nuevaMateriasPrima.retieneIva"
+                                                  class=" form-check-input"
+                                                  type="checkbox"
+                                                  value=""
+                                                />
+                        
+                                                <span class=" form-check-sign">
+                                                  <span class=" check"> </span>
+                                                </span>
+                                              </label>
+                                              Retiene Iva?
+                                            </div>
+                                                                                 
+                                          </div> 
+
                                         </td>
+                                        <td><button class=" btn btn-link" type="button" placement="left" (click)="addMaterial()" ngbTooltip="Agregar Nuevo Material" container="body" >
+                                          <i class=" tim-icons icon-pencil"> </i>
+                                          
+                                        </button>
+                                      </td>
                                         <td>
-                                          <label> Precio Unit. </label>
+                                          
                                           <input class=" form-control" name="txtPrecioUnit" [(ngModel)]="detalleCompra.precioUnitario" (change)="calcularSubtotal()" placeholder="P. Unitario" value="0.0" type="number"/>
                                         </td>
                                         <td>
-                                          <label> Cantidad </label>
+                                          
                                           <input class=" form-control" name="txtCantidad" placeholder="Cantidad" (change)="calcularSubtotal()" [(ngModel)]="detalleCompra.cantidad" type="number"/>
                                         </td>
                                         <td>
-                                          <label> Unidad </label>
+                                          
                                           <select class=" form-control" style="color: blueviolet" [(ngModel)]="detalleCompra.unidad" name="cboUnidad" (change)="calcularSubtotal()" >
                                             <option value="">Seleccione Unidad</option>                                             
                                             <option *ngFor="let und of arrayUnidad; let i=index" [value]="und.abreviado"> 
@@ -189,17 +228,18 @@
                                           </select>
                                         </td>
                                         <td>
-                                          <label> SubTotal </label>
+                                          
                                           <input class=" form-control" name="txtSubtotal" readonly  placeholder="Prec x Cant" [(ngModel)]="detalleCompra.subtotal" value="0.0" type="text"/>
                                         </td>
                                         <td class=" td-actions text-right">
                                           <button class=" btn btn-link" type="button" placement="left" (click)="addDetalle()" ngbTooltip="Agregar Item" container="body" >
-                                            <i class=" tim-icons icon-pencil"> </i>
+                                            
+                                            <i class=" tim-icons icon-simple-add"> </i>
                                           </button>
                                         </td>
                                       </tr>                                                 
                                       <tr *ngFor="let dt of detallesCompra; let d=index">
-                                        <td>{{ dt.MateriaPrima.descripcion + ' ' + dt.MateriaPrima.marca }} </td>
+                                        <td colspan="2">{{ dt.MateriaPrima.descripcion + ' ' + dt.MateriaPrima.marca }} </td>
                                         <td>{{ dt.precioUnitario }} </td>
                                         <td>{{ dt.cantidad }} </td>
                                         <td>{{ dt.unidad }} </td>
@@ -207,10 +247,12 @@
                                         <td class=" td-actions text-right">
                                           <button class=" btn btn-link" type="button" placement="left" ngbTooltip="Quitar Item" (click)="quitDetalle(d)" container="body" >
                                             <i class=" tim-icons icon-trash-simple"> </i>
+                                            
                                           </button>
                                         </td>
                                       </tr>                                                  
                                       <tr>                                                    
+                                        <td> </td>
                                         <td> </td>
                                         <td> </td>
                                         <td> </td>
@@ -222,11 +264,13 @@
                                         <td> </td>
                                         <td> </td>
                                         <td> </td>
+                                        <td> </td>
                                         <td>Iva:</td>
                                         <td>{{compra.montoIva}}</td>
                                         <td> </td>
                                       </tr>
                                       <tr>                                                    
+                                        <td> </td>
                                         <td> </td>
                                         <td> </td>
                                         <td> </td>

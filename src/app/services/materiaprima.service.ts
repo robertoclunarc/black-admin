@@ -10,7 +10,7 @@ import { catchError, tap } from 'rxjs/operators';
 })
 export class MateriaPrimaService {
 	private url: string;	
-	
+	nuevo: ImateriPrima={};
 	constructor(private http: HttpClient) {
 		this.url = environment.materiaPrimaUrl;
 	}
@@ -46,7 +46,7 @@ export class MateriaPrimaService {
 	
 	registrar(materia: ImateriPrima) {
 		return this.http.post<ImateriPrima>(this.url + 'insertar', materia).pipe(
-			tap(result => { this.log(`materia prima insertada`) }),
+			tap(result => { this.nuevo=result; this.log(`materia prima insertada`) }),
 			catchError(this.handleError('registrar materia', []))
 		);
 	}

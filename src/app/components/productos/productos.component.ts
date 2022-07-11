@@ -6,16 +6,26 @@ import { NgbModal, ModalDismissReasons, NgbModalModule, NgbModalOptions } from '
 import { formatDate } from "@angular/common";
 
 //models
-import { IProductos, IdetProducto, IdetProductosConMateriales } from '../../models/productos'
+import { IProductos, IdetProducto, IdetProductosConMateriales } from '../../models/productos';
+import { IMoneda } from '../../models/monedas';
+import { ImateriPrima } from '../../models/materiaprima';
+import { IUnidades } from '../../models/unidades';
 
 //services
-import { ProductosService } from '../../services/productos.service'
+import { ProductosService } from '../../services/productos.service';
+import { TasasCambiosService } from '../../services/tasacambios.service';
+import { MonendasService } from '../../services/monedas.service';
+import { MateriaPrimaService } from '../../services/materiaprima.service';
+import { PreciosService } from '../../services/precios.service';
+import { UnidadesService } from '../../services/unidad.service';
+import { UsuariosService } from '../../services/usuarios.service';
+import { InventarioMateialesService } from '../../services/inventariomateriales.service'
 
 @Component({
   selector: 'app-productos',
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css'],
-  providers: [ ProductosService ],
+  providers: [ ProductosService, TasasCambiosService,  MonendasService , MateriaPrimaService, PreciosService , UnidadesService, UsuariosService],
 })
 export class ProductosComponent implements OnInit {
   

@@ -61,6 +61,8 @@ export class CompraMaterialesComponent implements OnInit {
   public detallesCompraOLD: IDetallesCompra[]=[];
   public arrayMateriasPrima: ImateriPrima[]=[];
   public selectedMateriasPrima: ImateriPrima={};
+  public nuevaMateriasPrima: ImateriPrima={};
+  public arrayNuevosMateriales: ImateriPrima[]=[];
   public arrayUnidad: IUnidades[]=[];
   public arrayPreciosUltimos: Iprecios[]=[];
   public precio: Iprecios={} ;
@@ -68,7 +70,9 @@ export class CompraMaterialesComponent implements OnInit {
   public arrayUsuarios: IUsuarioSucursal[]=[];
   public userLogeado: string="";
   public nombreUser: string="";
+  public nuevoMaterial: boolean=false;
   closeResult = '';
+  public checkboxValue: any=true;
   modalOptions: NgbModalOptions;
   
   constructor(
@@ -255,19 +259,21 @@ export class CompraMaterialesComponent implements OnInit {
 			.catch(err => { console.log(err) });
   }
 
-  public TraerultimaTasa(idMoneda: number){
-    
-		this.srvTasasCambios.consultarPorIdMoneda(idMoneda)
-			.toPromise()
-			.then(results => {
-        			
-				if (results.length>0)	
-				  this.compra.tasaDia = results[0].tasaDia
-        /*else
-          this.compra.tasaDia=0.0;*/
-				
-			})
-			.catch(err => { console.log(err) });
+  public TraerultimaTasa(idMoneda: string){
+    if (idMoneda!=''){
+      
+      this.srvTasasCambios.consultarPorIdMoneda(Number(idMoneda))
+        .toPromise()
+        .then(results => {
+                
+          if (results.length>0)	
+            this.compra.tasaDia = results[0].tasaDia
+          /*else
+            this.compra.tasaDia=0.0;*/
+          
+        })
+        .catch(err => { console.log(err) });
+    }    
   }
 
   verModalDetalles(item: IdetallesComprasConMateriales){
@@ -312,7 +318,13 @@ export class CompraMaterialesComponent implements OnInit {
         fechaCrea: formatDate(Date.now(), 'yyyy-MM-dd HH:mm:ss','en'),
         estatus: "ACTIVO"
       };
-      console.log(inv);
+
+      if (det.MateriaPrima.idMateriaPrima==undefined){        
+        
+        inv.fkMateriaPrima=this.srvMateriaPrima.nuevo.idMateriaPrima;        
+        
+      }
+      
       await this.srvInventario.sumar(inv).toPromise();
       
     }  
@@ -340,9 +352,16 @@ export class CompraMaterialesComponent implements OnInit {
     }  
   }
 
+  addMaterial(){
+      this.nuevoMaterial= this.nuevoMaterial == true ? false : true;
+      this.nuevaMateriasPrima={};
+      this.selectedMateriasPrima={};
+  }
+
   private async guardarDetalles(idCompra: number){
     let detalle: IdetallesCompras;
     let precio: Iprecios;
+    console.log(this.detallesCompra)
     for await (let det of this.detallesCompra){
       detalle={};
       detalle={
@@ -362,10 +381,48 @@ export class CompraMaterialesComponent implements OnInit {
         fechaPrecio:  formatDate(Date.now(), 'yyyy-MM-dd HH:mm:ss','en'),
         tipo: "MATERIAL"
       }
-      //console.log(detalle);
+      
+      if (det.MateriaPrima.idMateriaPrima==undefined){
+        await this.nuevoMaterialAdd(det);
+        
+        detalle.fkMateriaPrima=this.srvMateriaPrima.nuevo.idMateriaPrima;
+        precio.fkMaterial==this.srvMateriaPrima.nuevo.idMateriaPrima;
+        
+      }
+      
       await this.srvMaterialesComprados.registrarDetalle(detalle).toPromise();
       await this.agregarPrecio(precio);
+      
     }
+  }
+
+  private async nuevoMaterialAdd(detaComp: IdetallesCompras){
+    
+    await this.srvMateriaPrima.registrar(this.nuevaMateriasPrima).toPromise()
+      //.then(async result => {        
+        
+        //await this.nuevoInventario(this.srvMateriaPrima.nuevo.idMateriaPrima, detaComp)
+     // })
+      
+  }
+
+  private async nuevoInventario(idMaterial: number, detaComp: IdetallesCompras){    
+
+    let inv: IinventariosMateriales={        
+        fkMateriaPrima: idMaterial,
+        cantidad: detaComp.cantidad,
+        cantidadAcumulada: this.detalleCompra.cantidad,
+        unidad: detaComp.unidad,
+        precio1: detaComp.precioUnitario,
+        fkMonedaPrecio1: this.compra.fkMoneda,        
+        fksucursal: this.compra.fkSucursal,              
+        loginCrea: this.compra.loginCrea,
+        fechaCrea: formatDate(Date.now(), 'yyyy-MM-dd HH:mm:ss','en'),
+        estatus: "ACTIVO"
+      };
+    console.log(inv);    
+    await this.srvInventario.registrar(inv).toPromise();     
+      
   }
 
   public async guardarCompra(){
@@ -392,8 +449,8 @@ export class CompraMaterialesComponent implements OnInit {
     }
 
     if(this.nuevo){
-    
-      this.srvMaterialesComprados.registrarCabecera(this.compra)
+      console.log(this.detallesCompra);
+      await this.srvMaterialesComprados.registrarCabecera(this.compra)
       .toPromise()
       .then(async result => {
         if (typeof result == "number"){
@@ -517,7 +574,8 @@ export class CompraMaterialesComponent implements OnInit {
 
   public async addDetalle(){
     if ((this.selectedMateriasPrima.idMateriaPrima==undefined) || (this.detalleCompra.cantidad==undefined || this.detalleCompra.cantidad <= 0) || (this.detalleCompra.unidad==undefined) || (this.detalleCompra.precioUnitario==undefined || this.detalleCompra.precioUnitario <=0) || (this.detalleCompra.subtotal==undefined) || (this.detalleCompra.subtotal <=0)){
-      if (this.selectedMateriasPrima.idMateriaPrima==undefined){
+      
+      if (this.selectedMateriasPrima.idMateriaPrima==undefined && this.nuevoMaterial==false){
       this. showNotification('top', 'center', 'Debe Selecionar un Material',4);
       return;
       }
@@ -541,7 +599,25 @@ export class CompraMaterialesComponent implements OnInit {
         this. showNotification('top', 'center', 'Calculo Subtotal Incorrecto',4);
         return;
       }
+
+      if (this.nuevoMaterial){
+        if (this.nuevaMateriasPrima.descripcion==undefined || this.nuevaMateriasPrima.descripcion==""){
+          this. showNotification('top', 'center', 'Debe Especificar la descripcion del nuevo material',4);
+          return;
+        }
+
+        if (this.nuevaMateriasPrima.marca==undefined || this.nuevaMateriasPrima.marca==""){
+          this. showNotification('top', 'center', 'Debe Especificar la marca del nuevo material',4);
+          return;
+        }
+        
+        
+        this.selectedMateriasPrima=this.nuevaMateriasPrima
+          
+        
+      }
     }
+    
     const dtl: IDetallesCompra={
       fkcompra: undefined,
       idDetCompra: undefined,
@@ -551,11 +627,14 @@ export class CompraMaterialesComponent implements OnInit {
       precioUnitario: this.detalleCompra.precioUnitario,
       subtotal: this.detalleCompra.subtotal
     };
+    
     this.detallesCompra.push(dtl);
     this.itemsDetalles=this.detallesCompra.length;
     this.calcularNeto();
     this.selectedMateriasPrima={};
     this.detalleCompra={};
+    this.nuevaMateriasPrima={};
+    
   }
 
   public quitDetalle(item: number){
