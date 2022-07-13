@@ -8,7 +8,8 @@ export interface IProductos{
     descripcionProducto? : string;
     fechaProduccion?: string;
     imagenProducto?: string;
-    fkSucursal?: number;    
+    fkSucursal?: number; 
+    loginCrea?: string;   
     marcaProducto?: string;
     retieneIva_prod?: boolean;
     iva?: number;

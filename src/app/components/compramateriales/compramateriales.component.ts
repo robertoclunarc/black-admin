@@ -361,9 +361,11 @@ export class CompraMaterialesComponent implements OnInit {
   private async guardarDetalles(idCompra: number){
     let detalle: IdetallesCompras;
     let precio: Iprecios;
-    console.log(this.detallesCompra)
+    let mat: ImateriPrima;
+    
     for await (let det of this.detallesCompra){
       detalle={};
+      mat={};
       detalle={
         fkcompra: this.compra.idCompra,
         idDetCompra: undefined,      
@@ -372,6 +374,7 @@ export class CompraMaterialesComponent implements OnInit {
         unidad: det.unidad,
         precioUnitario: det.precioUnitario,
         subtotal: det.subtotal
+
       };
 
       precio={        
@@ -381,9 +384,12 @@ export class CompraMaterialesComponent implements OnInit {
         fechaPrecio:  formatDate(Date.now(), 'yyyy-MM-dd HH:mm:ss','en'),
         tipo: "MATERIAL"
       }
+
+      mat=det.MateriaPrima;
       
       if (det.MateriaPrima.idMateriaPrima==undefined){
-        await this.nuevoMaterialAdd(det);
+        mat=det.MateriaPrima;
+        await this.nuevoMaterialAdd(mat);
         
         detalle.fkMateriaPrima=this.srvMateriaPrima.nuevo.idMateriaPrima;
         precio.fkMaterial==this.srvMateriaPrima.nuevo.idMateriaPrima;
@@ -396,9 +402,9 @@ export class CompraMaterialesComponent implements OnInit {
     }
   }
 
-  private async nuevoMaterialAdd(detaComp: IdetallesCompras){
+  private async nuevoMaterialAdd(material: ImateriPrima){
     
-    await this.srvMateriaPrima.registrar(this.nuevaMateriasPrima).toPromise()
+    await this.srvMateriaPrima.registrar(material).toPromise()
       //.then(async result => {        
         
         //await this.nuevoInventario(this.srvMateriaPrima.nuevo.idMateriaPrima, detaComp)
@@ -420,7 +426,7 @@ export class CompraMaterialesComponent implements OnInit {
         fechaCrea: formatDate(Date.now(), 'yyyy-MM-dd HH:mm:ss','en'),
         estatus: "ACTIVO"
       };
-    console.log(inv);    
+       
     await this.srvInventario.registrar(inv).toPromise();     
       
   }
@@ -449,7 +455,7 @@ export class CompraMaterialesComponent implements OnInit {
     }
 
     if(this.nuevo){
-      console.log(this.detallesCompra);
+      
       await this.srvMaterialesComprados.registrarCabecera(this.compra)
       .toPromise()
       .then(async result => {
@@ -654,7 +660,7 @@ export class CompraMaterialesComponent implements OnInit {
     }
     
     for await (let detalle of this.detallesCompra){
-      console.log(detalle.subtotal);    
+         
       subTotal=subTotal+detalle.subtotal;
       if (detalle.MateriaPrima.retieneIva==true)
         montoIva=montoIva + (detalle.subtotal*this.compra.iva / 100);

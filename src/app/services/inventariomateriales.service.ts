@@ -1,4 +1,4 @@
-import { IinventariosMateriales } from '../models/inventarios';
+import { IinventariosMateriales, IMaterialesEnInventario } from '../models/inventarios';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
@@ -15,9 +15,9 @@ export class InventarioMateialesService {
 		this.url = environment.inventarioUrl + 'materiales/'
 	}
 
-	consultarTodos(): Observable<IinventariosMateriales[]> {
+	consultarTodos(): Observable<IMaterialesEnInventario[]> {
 
-		return this.http.get<IinventariosMateriales[]>(this.url + 'consultar')
+		return this.http.get<IMaterialesEnInventario[]>(this.url + 'consultar')
 			.pipe(
 				tap(result => this.log(`fetched inventarios`)),
 				catchError(this.handleError('consultarTodos', []))
