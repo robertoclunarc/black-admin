@@ -215,7 +215,7 @@
                             <div class=" row">
                               
                                 <div class=" card-header">
-                                  <h6 class=" title d-inline">Detalles(44) </h6>
+                                  <h6 class=" title d-inline">Detalles({{ productosMateriales.materiaPrima.length }}) </h6>
                                   <p class=" card-category d-inline"> Materiales</p>
                                 </div>
                                 <div class=" card-body">
@@ -225,63 +225,62 @@
                                         <tr>                                                    
                                           <td>
                                             <label>Material </label>
-                                            <select class=" form-control" style="color: blueviolet" name="cboMaterial" >
+                                            <select #cboMaterial class="form-control" style="color: blueviolet" id="cboMaterial" name="cboMaterial" (change)="buscarUltimoPrecio($event.target.value)">
                                               <option value="">Seleccione Material</option>                                                                                        
                                               <option *ngFor="let mat of arrayInventario; let i=index" [value]="mat.MateriaPrima.idMateriaPrima"> 
                                                 {{mat.MateriaPrima.descripcion}}</option>
                                             </select>
                                           </td>
+                                          <td>                                            
+                                            Inv: {{materialSeleted.cantidadAcumulada}} {{materialSeleted.unidad}}
+                                          </td>
                                           <td>
                                             <label>Cantidad </label>
-                                            <input class=" form-control" name="txtCantidad"  placeholder="cantidad" value="0.0" type="number"/>
+                                            <input class=" form-control" name="txtCantidad"  placeholder="cantidad" [(ngModel)]="cantSelected" (change)="calcularPrecio($event.target.value)" type="number"/>
                                           </td>                                          
                                           <td>
                                             <label>Unidad Medida</label>
-                                            <select class=" form-control" style="color: blueviolet" name="cboMaterial" >
+                                            <select class=" form-control" style="color: blueviolet" name="cbounidad" [(ngModel)]="unidadSelected" (change)="calcularPrecio($event.target.value)">
                                               <option value="">Seleccione Unidad</option>                                             
-                                              <option > 
-                                                  </option>
+                                              <option *ngFor="let uni of arrayUnidad; let i=index" [value]="uni.abreviado">{{uni.abreviado}}</option>
                                             </select>
                                           </td>
                                           <td>
                                             <label>Precio </label>
-                                            <input class=" form-control" name="txtPrecioUnit"  placeholder="P. Unitario" value="0.0" disabled="" type="number"/>
-                                          </td> 
+                                            <input class=" form-control" name="txtPrecioUnit"  placeholder="P. Unitario" [(ngModel)]="precioCalculado" disabled="" type="number"/>
+                                          </td>
+                                          <td>                                            
+                                            {{modenaSelected}}
+                                          </td>  
                                           <td class=" td-actions text-right">
-                                            <button class=" btn btn-link" type="button" placement="left" ngbTooltip="Agregar Item" container="body"  >
+                                            <button class=" btn btn-link" type="button" placement="left" (click)="addMaterial()" ngbTooltip="Agregar Item" container="body"  >
                                               <i class=" tim-icons icon-pencil"> </i>
                                             </button>
                                           </td>
-                                        </tr>                                                 
-                                        <tr >                                          
-                                          <td></td>
-                                          <td></td>
-                                          <td></td>
-                                          <td></td>                                                    
+                                        </tr>                                                
+                                        <tr *ngFor="let det of productosMateriales.materiaPrima; let d=index">
+                                          <td>{{ det.Materia.descripcion }}</td>
+                                          <td></td>                                          
+                                          <td>{{ det.cantidad }}</td>
+                                          <td>{{ det.unidad }}</td>
+                                          <td>{{ det.precio }}</td>
+                                          <td>{{ det.moneda }}</td>                                                    
                                           <td class=" td-actions text-right">
-                                            <button class=" btn btn-link" type="button" placement="left" ngbTooltip="Quitar Item" container="body" >
+                                            <button class=" btn btn-link" type="button" placement="left" (click)="quitDetalle(d)" ngbTooltip="Quitar Item" container="body" >
                                               <i class=" tim-icons icon-trash-simple"> </i>
                                             </button>
                                           </td>
-                                        </tr>                                                  
-                                        <tr>                                                    
-                                          <td> </td>
-                                          <td> </td>
-                                          <td> </td>                                          
-                                          <td> </td>
-                                        </tr>
-                                        <tr>                                                    
-                                          <td> </td>
-                                          <td> </td>
-                                          <td> </td>                                          
-                                          <td> </td>
-                                        </tr>
-                                        <tr>                                                    
-                                          <td> </td>
-                                          <td> </td>
-                                          <td> </td>                                          
-                                          <td> </td>
-                                        </tr>
+                                        </tr> 
+                                        <tr>
+                                          <th></th>
+                                          <th></th>                                          
+                                          <th></th>
+                                          <th>Sub-Total:</th>
+                                          <th>{{ subTotal }}</th>
+                                          <th>{{ productosMateriales.moneda.abrevMoneda }}</th>                                                    
+                                          <th></th>
+                                        </tr>                                                 
+                                        
                                       </tbody>
                                     </table>
                                   </div>

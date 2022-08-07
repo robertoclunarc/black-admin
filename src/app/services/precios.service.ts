@@ -34,6 +34,11 @@ export class PreciosService {
 			);
 	}
 
+	async consultarUltimosPreciosMaterial(idMaterial: number): Promise<Iprecios> {
+
+		return await this.http.get<Iprecios>(this.url + 'consultar/ultimopreciomaterial/'+idMaterial).toPromise();
+	}
+
 	consultarUltimosPrecios(tipo: string): Observable<Iprecios[]> {
 
 		return this.http.get<Iprecios[]>(this.url + 'consultar/ultimoprecio/'+tipo)

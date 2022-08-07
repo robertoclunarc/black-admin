@@ -77,8 +77,8 @@ export class CompraMaterialesComponent implements OnInit {
   
   constructor(
     private http: HttpClient,
-    private toastr: ToastrService,
-    private modalService: NgbModal,
+    public toastr: ToastrService,
+    public modalService: NgbModal,
     private srvMaterialesComprados: MaterialesCompradosService,
     private srvProveedores: ProveedoresService,
     private srvParametros: ParametrosService,
@@ -301,7 +301,7 @@ export class CompraMaterialesComponent implements OnInit {
     });
   }
 
-  private async sumarInventario(){
+  async sumarInventario(){
     let detalle: IdetallesCompras;
     let inv: IinventariosMateriales;
     for await (let det of this.detallesCompra){
@@ -330,7 +330,7 @@ export class CompraMaterialesComponent implements OnInit {
     }  
   }
 
-  private async restarInventario(){
+  async restarInventario(){
     let detalle: IdetallesCompras;
     let inv: IinventariosMateriales;
     for await (let det of this.detallesCompraOLD){
@@ -358,7 +358,7 @@ export class CompraMaterialesComponent implements OnInit {
       this.selectedMateriasPrima={};
   }
 
-  private async guardarDetalles(idCompra: number){
+  async guardarDetalles(idCompra: number){
     let detalle: IdetallesCompras;
     let precio: Iprecios;
     let mat: ImateriPrima;
@@ -402,7 +402,7 @@ export class CompraMaterialesComponent implements OnInit {
     }
   }
 
-  private async nuevoMaterialAdd(material: ImateriPrima){
+  async nuevoMaterialAdd(material: ImateriPrima){
     
     await this.srvMateriaPrima.registrar(material).toPromise()
       //.then(async result => {        
@@ -493,7 +493,7 @@ export class CompraMaterialesComponent implements OnInit {
     this.itemsDetalles = 0;
   }
 
-  private registrarNuevo(){
+  registrarNuevo(){
     
     this.registrarCompra.compra={};
     this.compra={};
@@ -568,7 +568,7 @@ export class CompraMaterialesComponent implements OnInit {
     
   }
 
-  private getDismissReason(reason: any): string {
+  getDismissReason(reason: any): string {
     if (reason === ModalDismissReasons.ESC) {
       return 'by pressing ESC';
     } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {

@@ -1,12 +1,12 @@
 //componets
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, ViewChild, ElementRef } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { NgbModal, ModalDismissReasons, NgbModalModule, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { formatDate } from "@angular/common";
 
 //models
-import { IProductos, IdetProducto, IdetProductosConMateriales } from '../../models/productos';
+import { IProductos, IdetProducto, IdetProductosConMateriales, IDetProductos } from '../../models/productos';
 import { IMoneda } from '../../models/monedas';
 import { ImateriPrima } from '../../models/materiaprima';
 import { IUnidades } from '../../models/unidades';
@@ -23,6 +23,7 @@ import { UnidadesService } from '../../services/unidad.service';
 import { UsuariosService } from '../../services/usuarios.service';
 import { InventarioMateialesService } from '../../services/inventariomateriales.service';
 import { ParametrosService } from '../../services/parametros.service';
+import { Iprecios } from "src/app/models/precios";
 
 
 @Component({
@@ -37,9 +38,18 @@ export class ProductosComponent implements OnInit {
   public clicked: boolean = true;
   public titulos= ['', 'ID','Producto','Marca/Descripcion','Precio','Sucursal'];
   public arrayInventario: IMaterialesEnInventario []=[];
+  materialSeleted: IMaterialesEnInventario={};
+  
+  cantSelected: number=1;
+  unidadSelected: string;
+  precioCalculado: number;
+  subTotal: number=0;
+  modenaSelected: string="";
+  ultimoPrecio: Iprecios={}
   public arrayProductosMateriales: IdetProductosConMateriales[]=[];
   public productosMateriales: IdetProductosConMateriales={};
   public producto: IProductos={};
+  arrayUnidad: IUnidades[]=[];  
   public detProducto: IProductos={};
   public arrayUsuarios: IUsuarioSucursal[]=[];
   public arrayMonedas: IMoneda[];
@@ -53,6 +63,8 @@ export class ProductosComponent implements OnInit {
   closeResult = '';
   modalOptions: NgbModalOptions;
 
+  @ViewChild('cboMaterial') cboMaterial!: ElementRef<HTMLSelectElement> //ElementRef<HTMLInputElement>;
+
   constructor(
     private http: HttpClient,
     private toastr: ToastrService,
@@ -62,6 +74,8 @@ export class ProductosComponent implements OnInit {
     private srvUsuarios: UsuariosService,
     private srvMonedas: MonendasService,
     private srvInventario: InventarioMateialesService,
+    private srvUnidades: UnidadesService,
+    private srvPrecios: PreciosService,
     ) { 
 
     this.modalOptions={
@@ -70,11 +84,13 @@ export class ProductosComponent implements OnInit {
   }
   
   async ngOnInit() {
-    console.log('productos');
+    
     this.userLogeado="rlunar";
-    await this.llenarArrayUsuarios();    
+    await this.llenarArrayUsuarios();
+    this.llenarArrayUnidades();   
     this.llenarArrayMonedas();
-    this.llenarArrayProductosMateriales(null, 'null', null, null)
+    this.llenarArrayProductosMateriales(null, 'null', null, null);
+    this.materialSeleted.MateriaPrima={}
   }
 
   private async llenarArrayUsuarios(){
@@ -106,7 +122,19 @@ export class ProductosComponent implements OnInit {
           if (inv.fksucursal==this.sucursalActual && inv.cantidadAcumulada>0)
             this.arrayInventario.push(inv);
         }
-				console.log(`llenarArrayInventarioMateriales: ${this.arrayInventario}`)
+				//console.log(`llenarArrayInventarioMateriales: ${this.arrayInventario}`)
+			})
+			.catch(err => { console.log(err) });
+  }
+
+  private llenarArrayUnidades(){
+    
+		this.srvUnidades.consultarTodos()
+			.toPromise()
+			.then(results => {				
+					
+				this.arrayUnidad = results;
+				
 			})
 			.catch(err => { console.log(err) });
   }
@@ -129,6 +157,44 @@ export class ProductosComponent implements OnInit {
     
 		this.arrayMonedas = await this.srvMonedas.consultarTodos().toPromise();
 		
+  }
+
+  
+  async calcularPrecio(e){
+    
+    let factor: number=this.cantSelected;
+    if(this.materialSeleted.unidad!=this.unidadSelected){
+      if(this.materialSeleted.unidad=='Kg' && this.unidadSelected=='Gr'){
+          factor=this.cantSelected/1000;
+      }
+      if(this.materialSeleted.unidad=='Gr' && this.unidadSelected=='Kg'){
+          factor=this.cantSelected*1000;
+      }
+      if(this.materialSeleted.unidad=='Lt' && this.unidadSelected=='Ml'){
+        factor=this.cantSelected/1000;
+      }
+      if(this.materialSeleted.unidad=='Ml' && this.unidadSelected=='Lt'){
+          factor=this.cantSelected*1000;
+      }
+      
+    }
+    this.precioCalculado=Number((factor*this.ultimoPrecio.Precio).toFixed(2));
+       
+  }
+
+  async buscarUltimoPrecio(e){
+    
+    this.materialSeleted=this.arrayInventario.find((m: IMaterialesEnInventario)=>{ return m.MateriaPrima.idMateriaPrima==e});
+    this.modenaSelected=this.arrayMonedas.find((m: IMoneda)=>{ return m.idMoneda=this.materialSeleted.fkMonedaPrecio1}).abrevMoneda;
+    this.unidadSelected=this.materialSeleted.unidad;
+    //console.log(this.materialSeleted)
+    await this.srvPrecios.consultarUltimosPreciosMaterial(this.materialSeleted.MateriaPrima.idMateriaPrima)
+    .then(async (res) => {          
+      this.ultimoPrecio= res;
+      this.precioCalculado=this.ultimoPrecio.Precio;
+      this.calcularPrecio(this.unidadSelected)
+    });
+       
   }
 
   private getDismissReason(reason: any): string {
@@ -228,6 +294,36 @@ export class ProductosComponent implements OnInit {
    this.productosMateriales.producto.fkSucursal=this.arrayUsuarios.find(us => us.usuario.login==this.userLogeado).sucursal.idSucursal;
   }
 
+  addMaterial(){
+    let detalle:IdetProducto={
+      Materia:this.materialSeleted.MateriaPrima,
+      cantidad:this.cantSelected,
+      unidad:this.unidadSelected,
+      precio: this.precioCalculado,    
+      moneda:this.modenaSelected    
+    };    
+    this.productosMateriales.materiaPrima.push(detalle);
+    this.subTotal+=this.precioCalculado;
+    if (this.productosMateriales.producto.fkMoneda!=undefined)
+      this.productosMateriales.moneda.abrevMoneda =this.arrayMonedas.find((m: IMoneda)=>{ return m.idMoneda=this.productosMateriales.producto.fkMoneda}).abrevMoneda;
+    this.materialSeleted={};
+    this.materialSeleted.MateriaPrima={}
+    this.modenaSelected="";
+    
+    this.cantSelected=1;
+    this.unidadSelected="";
+    this.precioCalculado=0;
+    console.log(this.cboMaterial.nativeElement.selectedIndex);
+    //this.cboMaterial.nativeElement.selectedIndex=1
+    
+  }
+
+  public quitDetalle(item: number){
+    this.subTotal-=this.productosMateriales.materiaPrima[item].precio;
+    this.productosMateriales.materiaPrima.splice(item, 1);    
+    
+  }
+
   open(content, nuevo: boolean) {
     this.modalService.open(content, {windowClass:'dark-modal', backdropClass:'dark-modal',  modalDialogClass:'dark-modal', size:'lg', ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
@@ -240,6 +336,5 @@ export class ProductosComponent implements OnInit {
       this.registrarNuevo();
     }
   }
-
 
 }

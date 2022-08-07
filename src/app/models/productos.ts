@@ -19,17 +19,35 @@ export interface IProductos{
     tasaDiaProd?: number;
 }
 
+export interface IDetProductos{   
+    idDetProducto?: number;
+    fkProducto?: number;
+    fkMateria?: number;
+    cantidad?: number;
+    unidad?: string;
+    precio?: number;
+    moneda?: string;
+}
+
+/*export interface IMateriales{    
+    materiaPrima?: ImateriPrima;
+    cantidad?: number;
+    unidad?: string;
+}*/
+
 export interface IdetProducto{   
     idDetProducto?: number;
     fkProducto?: number;
     Materia?:ImateriPrima;
     cantidad?: number;
     unidad?: string;
+    precio?: number;
+    moneda?: string;
 }
 
 export interface IdetProductosConMateriales{    
-    producto?:IProductos
+    producto?:IProductos,
+    moneda?: IMoneda,
     materiaPrima?: IdetProducto[];  
     usuarioSucursal?: IUsuarioSucursal
-    moneda?: IMoneda,
 }

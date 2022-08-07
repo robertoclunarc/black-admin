@@ -1,6 +1,6 @@
 import { ImateriPrima } from './materiaprima';
 import { IMoneda } from './monedas';
-import { IProveedores } from './proveedores';
+import { IProveedores } from '../models/proveedores';
 import { ISucursal } from './sucursales';
 
 export interface IMaterialesComprados{

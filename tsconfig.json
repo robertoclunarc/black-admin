@@ -1,6 +1,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
@@ -10,7 +14,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es6",
+    "target": "es2017",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -19,6 +23,14 @@
       "dom",
       "es6",
       "es2017",
+      "es2020"
     ]
+  },
+  "angularCompilerOptions": {    
+    "enableI18nLegacyMessageIdFormat": false, 
+    "strictDomEventTypes": false,
+    "strictTemplates": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false
   }
 }

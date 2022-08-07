@@ -1,4 +1,4 @@
-import { IProveedores } from '../models/Proveedores';
+import { IProveedores } from '../models/proveedores';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
