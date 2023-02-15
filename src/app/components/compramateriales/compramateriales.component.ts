@@ -35,14 +35,14 @@ import { InventarioMateialesService } from '../../services/inventariomateriales.
               MateriaPrimaService, UnidadesService, PreciosService,
               UsuariosService, InventarioMateialesService, ],
   //styleUrls: ["compramateriales.component.css"],
-  styles:[`
+  /*styles:[`
     .dark-modal .modal-content {
       backgroud-color: #292bc;
       position: relative;
       top: 2%;
       transform: translateY(-20%);
     }
-    `]
+    `]*/
 })
 export class CompraMaterialesComponent implements OnInit {
 
@@ -61,6 +61,7 @@ export class CompraMaterialesComponent implements OnInit {
   public detallesCompraOLD: IDetallesCompra[]=[];
   public arrayMateriasPrima: ImateriPrima[]=[];
   public selectedMateriasPrima: ImateriPrima={};
+  public proveedorSelected: number=0;
   public nuevaMateriasPrima: ImateriPrima={};
   public arrayNuevosMateriales: ImateriPrima[]=[];
   public arrayUnidad: IUnidades[]=[];
@@ -353,9 +354,11 @@ export class CompraMaterialesComponent implements OnInit {
   }
 
   addMaterial(){
+    
       this.nuevoMaterial= this.nuevoMaterial == true ? false : true;
       this.nuevaMateriasPrima={};
       this.selectedMateriasPrima={};
+      
   }
 
   async guardarDetalles(idCompra: number){
@@ -436,7 +439,7 @@ export class CompraMaterialesComponent implements OnInit {
       this.showNotification('top', 'center', 'Especificar los Detalles de Compra',4);
       return;
     }
-    if (this.compra.idProveedor==undefined || this.compra.idProveedor.toString()==""){
+    if (this.proveedorSelected==undefined || this.proveedorSelected.toString()=="" || this.proveedorSelected==0){
       this.showNotification('top', 'center', 'Seleccionar Un Proveedor',4);
       return;
     }
@@ -454,16 +457,19 @@ export class CompraMaterialesComponent implements OnInit {
       this.compra.iva=0;      
     }
 
+    this.compra.idProveedor=this.proveedorSelected
+
     if(this.nuevo){
       
       await this.srvMaterialesComprados.registrarCabecera(this.compra)
       .toPromise()
       .then(async result => {
         if (typeof result == "number"){
-          this.compra.idCompra=result;      
+          this.compra.idCompra=result;
+          
           await this.guardarDetalles(this.compra.idCompra);
           await this.sumarInventario();
-          
+          this.showNotification('top', 'center', 'Compra Registrada',2);
         }      
         this.llenarArrayDetComprasMateriales();
       });
@@ -476,6 +482,7 @@ export class CompraMaterialesComponent implements OnInit {
           await this.srvMaterialesComprados.eliminarDetalleTodo(this.compra.idCompra).toPromise();
           await this.restarInventario();
           await this.guardarDetalles(this.compra.idCompra);
+          this.showNotification('top', 'center', 'Compra Actualizada',2);
         }      
         this.llenarArrayDetComprasMateriales();
       });
@@ -503,7 +510,7 @@ export class CompraMaterialesComponent implements OnInit {
     this.compra.montoIva = 0;
     this.compra.neto = 0;
     this.compra.iva=0;
-
+    this.proveedorSelected=0;
     this.TraerIva();
 
     this.registrarCompra.sucursal= this.arrayUsuarios.find(us => us.usuario.login==this.userLogeado).sucursal;    
@@ -554,6 +561,7 @@ export class CompraMaterialesComponent implements OnInit {
     this.compra.montoIva = item.compra.montoIva;
     this.compra.neto = item.compra.neto;
 
+    this.proveedorSelected=this.compra.idProveedor;
     this.nombreUser = this.arrayUsuarios.find(us => us.usuario.login==item.compra.loginCrea).usuario.nombres;
 
     this.registrarCompra.compra = item.compra;    
@@ -689,7 +697,7 @@ export class CompraMaterialesComponent implements OnInit {
       break;
       case 2:
       this.toastr.success('<span class="tim-icons icon-bell-55" [data-notify]="icon"></span> '+mensaje, '', {
-         disableTimeOut: true,
+         disableTimeOut: false,
          closeButton: true,
          enableHtml: true,
          toastClass: "alert alert-success alert-with-icon",

@@ -3,14 +3,14 @@
   font-size: $close-font-size;
   font-weight: $close-font-weight;
   line-height: 1;
-  color: $close-color;
+  color: rgba(0, 0, 0, 0.6);  //$close-color;
   text-shadow: $close-text-shadow;
   opacity: .5;
 
   &:not(:disabled):not(.disabled) {
 
     @include hover-focus {
-      color: $close-color;
+      color: #fd5d93;
       text-decoration: none;
       opacity: .75;
     }

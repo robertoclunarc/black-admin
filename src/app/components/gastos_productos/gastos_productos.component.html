@@ -1,0 +1,332 @@
+<div class=" content">
+    <div class=" row">
+      <div class=" col-md-12">
+        <div class=" card">
+          <div class=" card-header">
+            <h6 class=" title d-inline">Productos({{itemsProductos}})</h6>
+            <!--
+            <div class=" btn-group btn-group-toggle float-right"  data-toggle="buttons">
+                <label class=" btn btn-sm btn-danger btn-simple" (click)="clicked=true" [ngClass]="{'active':clicked===true}">
+                  <input checked="checked" (click)="open(content, clicked)" name="options" type="radio" />
+      
+                  <span class=" d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                    Nuevo Gasto
+                  </span>
+                  <span class=" d-block d-sm-none">
+                    <i class=" tim-icons icon-single-02"> </i>
+                  </span>
+                </label>             
+            </div>
+            -->
+          </div>
+          <div class=" card-body">
+            <div class=" table-responsive">
+              <table class=" table tablesorter" id="">
+                <thead class=" text-primary">
+                  <tr>
+                    <th>Ver</th>
+                    <th *ngFor="let t of titulos">{{ t }}</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let prd of arrayProductosCostos">
+                    <td *ngIf="prd.costos">                      
+                      <button title="Detalles Costos ID: {{prd.costos.idCosto}}" class=" btn btn-icon btn-round btn-google" (click)="verDetalles(content, prd)" href="javascript:void(0)">                        
+                        <i class=" tim-icons icon-bullet-list-67"> </i>
+                      </button>
+                    </td>
+                    <td *ngIf="!prd.costos">
+                      
+                      <button title="Sin Costos Registrados" class=" btn btn-icon btn-round btn-google" (click)="verDetalles(content, prd)" href="javascript:void(0)">
+                        <i class=" tim-icons icon-simple-delete"> </i>
+                      </button>
+                    </td>
+                    <td>{{ prd.producto.imagenProducto }}</td>
+                    <td>{{ prd.producto.idProducto }}</td>
+                    <td>{{ prd.producto.descripcionProducto }}</td>
+                    <td>{{ prd.producto.marcaProducto }}</td>
+                    <td>{{ prd.producto.precio }} {{prd.moneda.abrevMoneda }}</td> 
+                    <td *ngIf="!prd.costos"> </td>
+                    <td *ngIf="prd.costos">{{ prd.costos.neto }}</td>                   
+                    <td>{{ prd.usuarioSucursal.sucursal.nombreSucursal }}</td>                   
+                    <td>{{ prd.producto.fechaProduccion | date:'dd/MM/yyyy'}}</td>
+                  </tr>              
+                  
+                </tbody>
+              </table>
+                
+            </div>
+          </div>
+        </div>
+      </div>    
+    </div>
+  </div>
+<ng-template #content let-modal>
+    <div class="modal-header" >               
+      <button type="button" class="close"  aria-label="Close" (click)="modalService.dismissAll('close');">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">      
+      <form> 
+                                  
+          <div class=" card">            
+            <div class=" card-body">
+              <form>
+                <div class=" row">
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h6 class=" title d-inline">Costos ID: {{ObjCosto.costo.idCosto}}</h6>
+                    </div>
+                    <div class=" card-body">
+                       <div class=" row">
+                          <div class=" col-md-5 pr-md-1">
+                            <div class=" form-group">
+                              <label> Producto: </label>
+                              {{productosCostos.producto.descripcionProducto}}
+                            </div>
+                          </div>
+
+                          <div class=" col-md-2 pr-md-1">
+                            <div class=" form-group">
+                              <label> ID: </label>
+                              {{productosCostos.producto.idProducto}}
+                            </div>
+                          </div>
+
+                          <div class=" col-md-3 pr-md-1">
+                            <div class=" form-group">
+                              <label> Fecha Costo: </label>
+                              {{productosCostos.costos.fecha}}
+                            </div>
+                          </div>
+
+                          <div class=" col-md-2 pr-md-1">
+                            <div class=" form-group">
+                              <label> Precio: </label>
+                              {{productosCostos.producto.precio}} {{productosCostos.moneda.abrevMoneda}}
+                            </div>
+                          </div>
+                       </div>
+                       <div class=" row">
+                          <div class=" col-md-3 pr-md-1">
+                            <div class=" form-group">
+                              <label> Total (Precio+Gastos): </label>
+                              <input
+                                name="txtTotalGastos"
+                                class=" form-control"
+                                disabled=""
+                                [(ngModel)]="ObjCosto.costo.total"
+                                placeholder="Precio + Gastos"
+                                type="number"
+                                
+                              />
+                            </div>
+                          </div>
+                          <div class=" col-md-2 pr-md-1">
+                            <div class=" form-group">
+                              <label> Ganancia (%): </label>
+                              <input
+                                name="txtGanancia"
+                                class=" form-control" 
+                                [(ngModel)]="ObjCosto.costo.ganancia_porc" 
+                                (change)="calculaTotalGastos()"                            
+                                placeholder="%"
+                                type="number"
+                                
+                              />
+                            </div>
+                          </div>
+                          <div class=" col-md-2 pr-md-1">
+                            <div class=" form-group">
+                              <label> Cant. Racion(es): </label>
+                              <input
+                                name="txtCantRacion"
+                                class=" form-control"
+                                [(ngModel)]="ObjCosto.costo.raciones"
+                                (change)="calculaTotalGastos()"                             
+                                placeholder="Cant."
+                                type="number"
+                                
+                              />
+                            </div>
+                          </div>
+                          <div class=" col-md-2 pr-md-1">
+                            <div class=" form-group">
+                              <label> Total x Racion(es): </label>
+                              <input
+                                name="txtTotalRacion"
+                                class=" form-control"
+                                disabled=""
+                                [(ngModel)]="totalRaciones"
+                                placeholder="Total"
+                                type="number"
+                                
+                              />
+                            </div>
+                          </div>
+                          <div class=" col-md-3 pr-md-1">
+                            
+                            <div class=" form-group">
+                              <label> Expresado en: </label>
+                              <select class=" form-control" [ngModel]="idMonedaSelected"  name="cboMonedas" id="cboMonedas"  style="color:blueviolet" (change)="seleccionarMoneda($event.target.value)" >    
+                                <option *ngFor="let mon of arrayMonedas; let i=index" [value]="mon.idMoneda"> 
+                                  {{mon.descripcionMoneda}}</option>
+                              </select>
+                              
+                            </div>
+                            
+                          </div>
+                          
+                       </div>
+                       <div class=" row">
+                          <div class=" col-md-1 pr-md-1">
+                            <br>
+                            <button class=" btn btn-link" type="button" placement="left" (click)="TraerultimaTasa()" ngbTooltip="{{TooltipUltimaTasa}}" container="body" >
+                              <i class=" tim-icons icon-coins"> </i>
+                            </button>
+                          </div>
+
+                          <div class=" col-md-2 pr-md-1">
+                            <div class=" form-group">
+                              <label> Tasa: </label>                            
+                              <input
+                                name="txtTasa"
+                                class=" form-control" 
+                                [(ngModel)]="tasa"                             
+                                placeholder="Tasa"
+                                (change)="calculaMontoOtraMoneda()"
+                                type="number"                              
+                              />  
+                            </div>
+                          </div>
+
+                          <div class=" col-md-2 pr-md-1">
+                            <div class=" form-group">
+                              <label> Total en Divisas: </label>
+                              <input
+                                name="txtMontoOtraMoneda"
+                                class=" form-control"
+                                disabled=""
+                                [(ngModel)]="montoOtraMoneda"
+                                placeholder="0,00"
+                                type="number"
+                                
+                              />
+                              
+                            </div>
+                          </div>
+
+                          <div class=" col-md-2 pr-md-1">
+                            <div class=" form-group">
+                              <label> Racion(es) <strong *ngIf="otraModenaSelected.abrevMoneda!=undefined">en {{ otraModenaSelected.abrevMoneda }} </strong>: </label>
+                              <input
+                                name="txtRacionesOtraMoneda"
+                                class=" form-control"
+                                disabled=""
+                                [(ngModel)]="montoRacionOtraMoneda"
+                                placeholder="0,00"
+                                type="number"
+                                
+                              />
+                              
+                            </div>
+                          </div>
+                        
+                          <div class=" col-md-2 pr-md-1">
+                            <div class=" form-group">
+                              <label> Racion + Ganancia: </label>
+                              <input
+                                name="txtNetoRacion"
+                                class=" form-control"
+                                disabled=""
+                                [(ngModel)]="netoRacion"
+                                placeholder="0,00"
+                                type="number"
+                                
+                              />
+                            </div>
+                          </div>
+                          <div class=" col-md-3 pr-md-1">
+                            <div class=" form-group">
+                              <label> Total Neto: </label>
+                              <input
+                                name="txtNeto"
+                                class=" form-control"
+                                disabled=""
+                                [(ngModel)]="ObjCosto.costo.neto"
+                                placeholder="0,00"
+                                type="number"
+                                
+                              />
+                            </div>
+                          </div>
+                       </div>
+                    </div>
+                  </div> 
+                </div>
+                <div class=" row">
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h6 class=" title d-inline">Gastos({{ ObjCosto.gastos.length }})</h6>
+                    </div>
+                    <div class=" card-body">
+                      <table class=" table">
+                        <tbody>
+                          <tr>                                                    
+                            <td>
+                              <label>Descripcion </label>
+                              <input class=" form-control" name="txtDescGasto"  placeholder="Descripcion Gasto" [(ngModel)]="gastoProducto.descripcion_gasto"  type="text"/>                                        
+                            </td>
+                            <td>
+                              <label>Precio </label>
+                              <input class=" form-control" name="txtPrecioGasto"  placeholder="{{ modenaSelected.abrevMoneda }}" [(ngModel)]="gastoProducto.precio"  type="number"/>                              
+                            </td>                            
+                            <td>
+                            </td>
+                            <td class=" td-actions text-right">
+                              <button class=" btn btn-link" type="button" placement="left" (click)="addGasto()" ngbTooltip="Agregar Item" container="body"  >
+                                <i class=" tim-icons icon-simple-add"> </i>
+                              </button>
+                            </td>
+                            
+                          </tr>
+                                                                        
+                          <tr *ngFor="let gt of ObjCosto.gastos; let g=index">
+                            <td>{{ gt.descripcion_gasto }}</td>                                      
+                            <td>{{ gt.precio }}</td> 
+                            <td>{{ modenaSelected.abrevMoneda }}</td>                                                                                          
+                            <td class=" td-actions text-right">
+                              <button class=" btn btn-link" type="button" placement="left" (click)="quitGasto(g)" ngbTooltip="Quitar Item" container="body" >
+                                <i class=" tim-icons icon-trash-simple"> </i>
+                              </button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Sub-Total: {{ modenaSelected.abrevMoneda }}</th>                                        
+                            <th>{{ totalGastos }}</th>
+                            <th></th>               
+                            <th></th>
+                          </tr>                                                 
+                          
+                        </tbody>
+                      </table>
+                      
+                    </div>
+                  </div> 
+                </div>
+                
+              </form>
+            </div>
+            <div class=" card-footer">
+              <!--modal.close('Save click')-->
+              <button class=" btn btn-fill btn-danger" [disabled]="ObjCosto.costo.idCosto==undefined" (click)="actualizarCostos()" type="submit">Actualizar</button>
+              <button class=" btn btn-fill btn-danger" (click)="registrarNuevo()" type="submit">Nuevo</button>
+            </div>
+          </div>
+                    
+      </form>
+    </div>
+    
+  </ng-template>

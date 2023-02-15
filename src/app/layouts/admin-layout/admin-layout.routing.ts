@@ -10,6 +10,9 @@ import { TypographyComponent } from "../../pages/typography/typography.component
 //import { RtlComponent } from "../../pages/rtl/rtl.component";
 import { CompraMaterialesComponent } from "../../components/compramateriales/compramateriales.component";
 import { ProductosComponent } from "../../components/productos/productos.component";
+import { GastosProductosComponent } from "../../components/gastos_productos/gastos_productos.component";
+import { TasaCambioComponent } from '../../components/tasacambio/tasacambio.component'
+import { ProveedoresComponent } from "../../components/proveedores/proveedores.component";
 
 export const AdminLayoutRoutes: Routes = [
   { path: "dashboard", component: DashboardComponent },
@@ -24,4 +27,7 @@ export const AdminLayoutRoutes: Routes = [
 
   { path: "compramateriales", component: CompraMaterialesComponent },
   { path: "productos", component: ProductosComponent },
+  { path: "costos", component: GastosProductosComponent },
+  { path: "tasas", component: TasaCambioComponent },
+  { path: "proveedores", component: ProveedoresComponent },
 ];

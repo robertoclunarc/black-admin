@@ -9,7 +9,7 @@ export interface ITasaCambio{
 
 export interface ItasaCambioMoneda{
     tasa: ITasaCambio;
-    modeda: IMoneda;
+    moneda: IMoneda;
 }
 
 export interface ItasaFiltro {

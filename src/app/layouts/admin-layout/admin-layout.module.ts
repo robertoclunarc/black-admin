@@ -12,12 +12,14 @@ import { NotificationsComponent } from "../../pages/notifications/notifications.
 import { UserComponent } from "../../pages/user/user.component";
 import { TablesComponent } from "../../pages/tables/tables.component";
 import { TypographyComponent } from "../../pages/typography/typography.component";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 // import { RtlComponent } from "../../pages/rtl/rtl.component";
 
 import { CompraMaterialesComponent } from "../../components/compramateriales/compramateriales.component";
 import { ProductosComponent } from "../../components/productos/productos.component";
-
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { GastosProductosComponent } from "../../components/gastos_productos/gastos_productos.component";
+import { TasaCambioComponent } from "../../components/tasacambio/tasacambio.component";
+import { ProveedoresComponent } from "../../components/proveedores/proveedores.component";
 
 @NgModule({
   imports: [
@@ -39,6 +41,9 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
     CompraMaterialesComponent,
     ProductosComponent,
+    GastosProductosComponent,
+    TasaCambioComponent,
+    ProveedoresComponent,
   ]
 })
 export class AdminLayoutModule {}

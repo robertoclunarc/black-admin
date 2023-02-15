@@ -6,18 +6,18 @@
             <h6 class=" title d-inline">Productos({{itemsProductos}})</h6>
             
             <div class=" btn-group btn-group-toggle float-right"  data-toggle="buttons">
-            <label class=" btn btn-sm btn-danger btn-simple" (click)="clicked=true" [ngClass]="{'active':clicked===true}">
-              <input checked="checked" (click)="open(content, clicked)" name="options" type="radio" />
-  
-              <span class=" d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                Nueva Producto
-              </span>
-              <span class=" d-block d-sm-none">
-                <i class=" tim-icons icon-single-02"> </i>
-              </span>
-            </label>         
+                <label class=" btn btn-sm btn-danger btn-simple" (click)="clicked=true" [ngClass]="{'active':clicked===true}">
+                  <input checked="checked" (click)="open(content, clicked)" name="options" type="radio" />
+      
+                  <span class=" d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                    Nuevo Producto
+                  </span>
+                  <span class=" d-block d-sm-none">
+                    <i class=" tim-icons icon-single-02"> </i>
+                  </span>
+                </label>         
             
-          </div>
+            </div>
           </div>
           <div class=" card-body">
             <div class=" table-responsive">
@@ -32,14 +32,7 @@
                 <tbody>
                   <tr *ngFor="let prd of arrayProductosMateriales">
                     <td>
-                      <!--
-                        descripcionProducto? : string;
-    fechaProduccion?: string;
-    imagenProducto?: string;
-    fkSucursal?: number;    
-    marca?: string;
-                      <a href="javascript:void(0)" (click)="verModalDetalles(cmp)" ><i class=" tim-icons icon-bullet-list-67"> </i></a> 
-                      -->
+                      
                       <button title="Ver Detalles de Compra" class=" btn btn-icon btn-round btn-google" (click)="verDetalles(content, prd)" href="javascript:void(0)">
                         <i class=" tim-icons icon-bullet-list-67"> </i>
                       </button>
@@ -47,262 +40,271 @@
                     <td>{{ prd.producto.imagenProducto }}</td>
                     <td>{{ prd.producto.idProducto }}</td>
                     <td>{{ prd.producto.descripcionProducto }}</td>
-                    <td>{{ prd.producto.marca }}</td>
+                    <td>{{ prd.producto.marcaProducto }}</td>
                     <td>{{ prd.producto.precio }} {{prd.moneda.abrevMoneda }}</td>                    
                     <td>{{ prd.usuarioSucursal.sucursal.nombreSucursal }}</td>                   
-                    
+                    <td>{{ prd.producto.fechaProduccion | date:'dd/MM/yyyy'}}</td>
                   </tr>              
                   
                 </tbody>
               </table>
-              <ng-template #content let-modal>
-                <div class="modal-header" >               
-                  <button type="button" class="close"  aria-label="Close" (click)="modalService.dismissAll('close');">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <form>                         
-                      <div class=" card">
-                        <div class=" card-header"><h5 class=" title">Detalles del Productos
-                          <div class=" typography-line">  
-                                                                
-                            <p *ngIf="productosMateriales.producto.idProducto != undefined"  class=" text-success">
-                              ID Producto: {{ productosMateriales.producto.idProducto }}                                        
-                            </p>
-                          
-                          </div></h5>
-                        </div>
-                        <div class=" card-body">
-                          <form>
-                            <div class=" row">
-                              <div class=" col-md-5 pr-md-1">
-                                <div class=" form-group">
-                                  <label> Sucursal </label>
-                                  <input
-                                    name="txtNombreSucursal"
-                                    class=" form-control"
-                                    disabled=""
-                                    placeholder="Company"
-                                    type="text"
-                                    [(ngModel)]="productosMateriales.usuarioSucursal.sucursal.nombreSucursal"
-                                  />
-                                </div>
-                              </div>
-                              <div class=" col-md-3 px-md-1">
-                                <div class=" form-group">
-                                  <label> Username </label>
-                                  <input
-                                    class=" form-control"
-                                    disabled=""
-                                    name="txtUserName"
-                                    placeholder="Username"
-                                    type="text"
-                                    [(ngModel)]="productosMateriales.producto.loginCrea"
-                                  />
-                                </div>
-                              </div>
-                              <div class=" col-md-4 pl-md-1">
-                                <div class=" form-group">
-                                  <label for="txtfecha"> Fecha </label>
-                                  <input name="txtFecha"
-                                    disabled=""
-                                    class="form-control"
-                                    [(ngModel)]="productosMateriales.producto.fechaProduccion"
-                                    placeholder=""
-                                    type="date"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                            <div class=" row">
-                              <div class=" col-md-3 pr-md-1">
-                                <div class=" form-group">
-                                  <label> Producto </label>
-                                  <input
-                                    class=" form-control"                                    
-                                    name="txtDescripcionProducto"
-                                    placeholder="Descripcion de Producto"
-                                    type="text"
-                                    [(ngModel)]="productosMateriales.producto.descripcionProducto"
-                                  />
-                                  
-                                </div>
-                              </div>
-                              <div class=" col-md-3 px-md-1">
-                                <div class=" form-group">
-                                  <label> Marca/Descripcion</label>
-                                  <input
-                                    class="form-control"
-                                    placeholder="Marca"
-                                    type="text" name="txtMarca" id="txtMarca"
-                                    [(ngModel)]="productosMateriales.producto.marcaProducto"
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div class=" col-md-3 pr-md-1">
-                                <div class=" form-group">
-                                  <label> Imagen </label>
-                                  <input
-                                    class="form-control"
-                                    placeholder="imagen del producto"
-                                    type="text" name="txtimagenProducto" id="txtimagenProducto"
-                                    [(ngModel)]="productosMateriales.producto.imagenProducto"
-                                  />
-                                  
-                                </div>
-                              </div>
-                              <div class=" col-md-3 px-md-1">
-                                <label> Precio </label>
-                                  <input
-                                    class="form-control"
-                                    placeholder="Precio"
-                                    type="number" name="txtPrecio" id="txtPrecio"
-                                    [(ngModel)]="productosMateriales.producto.precio"
-                                  />
-                              </div>
-                            </div>
-                            <div class=" row">
-                              <div class=" col-md-3 pr-md-1">
-                                <div class=" form-group">
-                                  <label> Monto Iva </label>
-                                  <input
-                                    class="form-control"
-                                    placeholder="Ultimo Monto Iva"
-                                    type="number" name="txtMontoIva" id="txtMontoIva"
-                                    [(ngModel)]="productosMateriales.producto.montoIva"
-                                  />
-                                </div>
-                              </div>
-                              <div class=" col-md-3 px-md-1">
-                                <div class=" form-group">
-                                  <label> Iva (%)</label>
-                                  <input
-                                    class="form-control"
-                                    placeholder="Ultimo Iva"
-                                    type="number" name="txtIva" id="txtIva"
-                                    [(ngModel)]="productosMateriales.producto.iva"
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div class=" col-md-3 pr-md-1">
-                                <div class=" form-group">
-                                  <label> Tasa </label>
-                                  <input name="txtTasaDia" id="txtTasaDia" 
-                                    class=" form-control"
-                                    placeholder="Tasa del Dia"
-                                    type="number"
-                                    [(ngModel)]="productosMateriales.producto.tasaDiaProd"
-                                  />
-                                  
-                                </div>
-                              </div>
-                              <div class=" col-md-3 px-md-1">
-                                <div class=" form-group">
-                                  
-                                  <label> Moneda </label>
-                                  <select class=" form-control"  name="cboMonedas" id="cboMonedas"  [(ngModel)]="productosMateriales.producto.fkMoneda"  style="color:blueviolet" > 
-                                    <option value="">Seleccione Moneda</option>                                             
-                                    <option *ngFor="let mon of arrayMonedas; let i=index" [value]="mon.idMoneda"> 
-                                      {{mon.descripcionMoneda}}</option>
-                                  </select>
-                                  
-                                </div>
-                              </div>
-                            </div>
-                            <div class=" row">
-                              
-                                <div class=" card-header">
-                                  <h6 class=" title d-inline">Detalles({{ productosMateriales.materiaPrima.length }}) </h6>
-                                  <p class=" card-category d-inline"> Materiales</p>
-                                </div>
-                                <div class=" card-body">
-                                  <div class=" table-full-width table-responsive">
-                                    <table class=" table">
-                                      <tbody>
-                                        <tr>                                                    
-                                          <td>
-                                            <label>Material </label>
-                                            <select #cboMaterial class="form-control" style="color: blueviolet" id="cboMaterial" name="cboMaterial" (change)="buscarUltimoPrecio($event.target.value)">
-                                              <option value="">Seleccione Material</option>                                                                                        
-                                              <option *ngFor="let mat of arrayInventario; let i=index" [value]="mat.MateriaPrima.idMateriaPrima"> 
-                                                {{mat.MateriaPrima.descripcion}}</option>
-                                            </select>
-                                          </td>
-                                          <td>                                            
-                                            Inv: {{materialSeleted.cantidadAcumulada}} {{materialSeleted.unidad}}
-                                          </td>
-                                          <td>
-                                            <label>Cantidad </label>
-                                            <input class=" form-control" name="txtCantidad"  placeholder="cantidad" [(ngModel)]="cantSelected" (change)="calcularPrecio($event.target.value)" type="number"/>
-                                          </td>                                          
-                                          <td>
-                                            <label>Unidad Medida</label>
-                                            <select class=" form-control" style="color: blueviolet" name="cbounidad" [(ngModel)]="unidadSelected" (change)="calcularPrecio($event.target.value)">
-                                              <option value="">Seleccione Unidad</option>                                             
-                                              <option *ngFor="let uni of arrayUnidad; let i=index" [value]="uni.abreviado">{{uni.abreviado}}</option>
-                                            </select>
-                                          </td>
-                                          <td>
-                                            <label>Precio </label>
-                                            <input class=" form-control" name="txtPrecioUnit"  placeholder="P. Unitario" [(ngModel)]="precioCalculado" disabled="" type="number"/>
-                                          </td>
-                                          <td>                                            
-                                            {{modenaSelected}}
-                                          </td>  
-                                          <td class=" td-actions text-right">
-                                            <button class=" btn btn-link" type="button" placement="left" (click)="addMaterial()" ngbTooltip="Agregar Item" container="body"  >
-                                              <i class=" tim-icons icon-pencil"> </i>
-                                            </button>
-                                          </td>
-                                        </tr>                                                
-                                        <tr *ngFor="let det of productosMateriales.materiaPrima; let d=index">
-                                          <td>{{ det.Materia.descripcion }}</td>
-                                          <td></td>                                          
-                                          <td>{{ det.cantidad }}</td>
-                                          <td>{{ det.unidad }}</td>
-                                          <td>{{ det.precio }}</td>
-                                          <td>{{ det.moneda }}</td>                                                    
-                                          <td class=" td-actions text-right">
-                                            <button class=" btn btn-link" type="button" placement="left" (click)="quitDetalle(d)" ngbTooltip="Quitar Item" container="body" >
-                                              <i class=" tim-icons icon-trash-simple"> </i>
-                                            </button>
-                                          </td>
-                                        </tr> 
-                                        <tr>
-                                          <th></th>
-                                          <th></th>                                          
-                                          <th></th>
-                                          <th>Sub-Total:</th>
-                                          <th>{{ subTotal }}</th>
-                                          <th>{{ productosMateriales.moneda.abrevMoneda }}</th>                                                    
-                                          <th></th>
-                                        </tr>                                                 
-                                        
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                </div>
-                              
-                            </div>                                      
-                            
-                          </form>
-                        </div>
-                        <div class=" card-footer">
-                          <!--modal.close('Save click')-->
-                          <button class=" btn btn-fill btn-danger"  type="submit">Save</button>
-                        </div>
-                      </div>
-                                
-                  </form>
-                </div>
                 
-              </ng-template>  
             </div>
           </div>
         </div>
       </div>    
     </div>
   </div>
+
+  <ng-template #content let-modal>
+    <div class="modal-header" >               
+      <button type="button" class="close"  aria-label="Close" (click)="modalService.dismissAll('close');">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form>                         
+          <div class=" card">
+            <div class=" card-header"><h5 class=" title">Detalles del Productos
+              <div class=" typography-line">  
+                                                    
+                <p *ngIf="productosMateriales.producto.idProducto != undefined"  class=" text-success">
+                  ID Producto: {{ productosMateriales.producto.idProducto }}                                        
+                </p>
+              
+              </div></h5>
+            </div>
+            <div class=" card-body">
+              <form>
+                <div class=" row">
+                  <div class=" col-md-5 pr-md-1">
+                    <div class=" form-group">
+                      <label> Sucursal </label>
+                      <input
+                        name="txtNombreSucursal"
+                        class=" form-control"
+                        disabled=""
+                        placeholder="Company"
+                        type="text"
+                        [(ngModel)]="productosMateriales.usuarioSucursal.sucursal.nombreSucursal"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-3 px-md-1">
+                    <div class=" form-group">
+                      <label> Username </label>
+                      <input
+                        class=" form-control"
+                        disabled=""
+                        name="txtUserName"
+                        placeholder="Username"
+                        type="text"
+                        [(ngModel)]="productosMateriales.producto.loginCrea"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-4 pl-md-1">
+                    <div class=" form-group">
+                      <label for="txtfecha"> Fecha </label>
+                      <input name="txtFecha"
+                        disabled=""
+                        class="form-control"
+                        [(ngModel)]="productosMateriales.producto.fechaProduccion"
+                        placeholder=""
+                        type="date"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class=" row">
+                  <div class=" col-md-3 pr-md-1">
+                    <div class=" form-group">
+                      <label> Producto </label>
+                      <input
+                        class=" form-control"                                    
+                        name="txtDescripcionProducto"
+                        placeholder="Descripcion de Producto"
+                        type="text"
+                        [(ngModel)]="productosMateriales.producto.descripcionProducto"
+                      />
+                      
+                    </div>
+                  </div>
+                  <div class=" col-md-3 px-md-1">
+                    <div class=" form-group">
+                      <label> Marca/Descripcion</label>
+                      <input
+                        class="form-control"
+                        placeholder="Marca"
+                        type="text" name="txtMarca" id="txtMarca"
+                        [(ngModel)]="productosMateriales.producto.marcaProducto"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div class=" col-md-3 pr-md-1">
+                    <div class=" form-group">
+                      <label> Imagen </label>
+                      <input
+                        class="form-control"
+                        placeholder="imagen del producto"
+                        type="text" name="txtimagenProducto" id="txtimagenProducto"
+                        [(ngModel)]="productosMateriales.producto.imagenProducto"
+                      />
+                      
+                    </div>
+                  </div>
+                  <div class=" col-md-3 px-md-1">
+                    <label> Precio </label>
+                      <input
+                        class="form-control"
+                        placeholder="Precio"
+                        type="number" name="txtPrecio" id="txtPrecio"
+                        [(ngModel)]="productosMateriales.producto.precio"
+                        (change)="calculoMontoIva()"
+                      />
+                  </div>
+                </div>
+                <div class=" row">
+                  <div class=" col-md-3 pr-md-1">
+                    <div class=" form-group">
+                      <label> Monto Iva </label>
+                      <input
+                        class="form-control"
+                        placeholder="Ultimo Monto Iva"
+                        type="number" name="txtMontoIva" id="txtMontoIva"
+                        [(ngModel)]="productosMateriales.producto.montoIva"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-3 px-md-1">
+                    <div class=" form-group">
+                      <label> Iva (%)</label>
+                      <input
+                        class="form-control"
+                        placeholder="Ultimo Iva"
+                        type="number" name="txtIva" id="txtIva"
+                        [(ngModel)]="productosMateriales.producto.iva"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-3 px-md-1">
+                    <div class=" form-group">
+                      
+                      <label> Moneda </label>
+                      <select class=" form-control"  name="cboMonedas" id="cboMonedas" [(ngModel)]="productosMateriales.producto.fkMoneda" (change)="selecionarMoneda($event.target.value); calculoMontoIva()" style="color:blueviolet" > 
+                        <option value="">Seleccione Moneda</option>                                             
+                        <option *ngFor="let mon of arrayMonedas; let i=index" [value]="mon.idMoneda"> 
+                          {{mon.descripcionMoneda}}</option>
+                      </select>
+                      
+                    </div>
+                  </div>
+                  <div class=" col-md-3 pr-md-1">
+                    <div class=" form-group">
+                      <label> Tasa </label>
+                      <input name="txtTasaDia" id="txtTasaDia" 
+                        class=" form-control"
+                        placeholder="Tasa del Dia"
+                        type="number"
+                        [(ngModel)]="productosMateriales.producto.tasaDiaProd"
+                      />
+                      
+                    </div>
+                  </div>
+                </div>
+                
+                <div class=" row">
+                  <div class=" card">
+                    <div class=" card-header">
+                      <h6 class=" title d-inline">Detalles({{ productosMateriales.materiaPrima.length }}) </h6>
+                      <p class=" card-category d-inline"> Materiales</p>
+                    </div>
+                    <div class=" card-body">
+                      
+                        <table class=" table">
+                          <tbody>
+                            <tr>                                                    
+                              <td>
+                                <label>Material </label>
+                                <select #cboMaterial class="form-control" style="color: blueviolet" id="cboMaterial" [disabled]="cboMaterialDisabled" name="cboMaterial" (change)="buscarUltimoPrecio($event.target.value)">
+                                  <option value="">Seleccione Material</option>                                                                                      
+                                  <option *ngFor="let mat of arrayInventario; let i=index" [value]="mat.MateriaPrima.idMateriaPrima"> 
+                                    {{mat.MateriaPrima.descripcion}}</option>
+                                </select>
+                                
+                              </td>
+                              <td>
+                                <div *ngIf="materialSeleted.cantidadAcumulada!=undefined">
+                                  <label>Inventario</label>
+                                  <input class=" form-control" name="txtInventario" [value]="materialSeleted.cantidadAcumulada + materialSeleted.unidad" readonly type="text"/>
+                                   
+                                </div>
+                              </td>
+                              <td>
+                                <label>Cantidad </label>
+                                <input class=" form-control" name="txtCantidad"  placeholder="cantidad" [(ngModel)]="cantSelected" (change)="calcularPrecio($event.target.value)" type="number"/>
+                              </td>                                          
+                              <td>
+                                <label>Unidad Medida</label>
+                                <select class=" form-control" style="color: blueviolet" name="cbounidad" [(ngModel)]="unidadSelected" (change)="calcularPrecio($event.target.value)">
+                                  <option value="">Seleccione Unidad</option>                                             
+                                  <option *ngFor="let uni of arrayUnidad; let i=index" [value]="uni.abreviado">{{uni.abreviado}}</option>
+                                </select>
+                              </td>
+                              <td>
+                                <label>Precio </label>
+                                <input class=" form-control" name="txtPrecioUnit"  placeholder="P. Unitario" [(ngModel)]="precioCalculado" disabled="" type="number"/>
+                              </td>
+                              <td>                                            
+                                {{modenaSelected}}
+                              </td>  
+                              <td class=" td-actions text-right">
+                                <button class=" btn btn-link" type="button" placement="left" (click)="addMaterial()" ngbTooltip="Agregar Item" container="body"  >
+                                  <i class=" tim-icons icon-simple-add"> </i>
+                                </button>
+                              </td>
+                            </tr>
+                                                                           
+                            <tr *ngFor="let det of productosMateriales.materiaPrima; let d=index">
+                              <td>{{ det.Materia.descripcion }}</td>
+                              <td></td>                                          
+                              <td>{{ det.cantidad }}</td>
+                              <td>{{ det.unidad }}</td>
+                              <td>{{ det.precio }}</td>
+                              <td>{{ det.moneda }}</td>                                                    
+                              <td class=" td-actions text-right">
+                                <button class=" btn btn-link" type="button" placement="left" (click)="quitDetalle(d)" ngbTooltip="Quitar Item" container="body" >
+                                  <i class=" tim-icons icon-trash-simple"> </i>
+                                </button>
+                              </td>
+                            </tr> 
+                            <tr>
+                              <th></th>
+                              <th></th>                                          
+                              <th></th>
+                              <th>Sub-Total:</th>
+                              <th>{{ subTotal }}</th>
+                              <th>{{ productosMateriales.moneda.abrevMoneda }}</th>                                                    
+                              <th></th>
+                            </tr>                                                 
+                            
+                          </tbody>
+                        </table>
+                      
+                    </div>
+                  </div>
+                </div>
+                
+              </form>
+            </div>
+            <div class=" card-footer">
+              <!--modal.close('Save click')-->
+              <button class=" btn btn-fill btn-danger" (click)="guardarProducto()" type="submit">Guardar</button>
+            </div>
+          </div>
+                    
+      </form>
+    </div>
+    
+  </ng-template>

@@ -17,14 +17,32 @@ export const ROUTES: RouteInfo[] = [
   },
   {
     path: "/compramateriales",
-    title: "Compra Materiales",
-    icon: "icon-chart-pie-36",
+    title: "Materiales",
+    icon: "icon-settings-gear-63",
     class: ""
   },
   {
     path: "/productos",
     title: "Productos",
     icon: "icon-atom",
+    class: ""
+  },
+  {
+    path: "/costos",
+    title: "Costos",
+    icon: "icon-money-coins",
+    class: ""
+  },
+  {
+    path: "/tasas",
+    title: "Tasa Cambio",
+    icon: "icon-coins",
+    class: ""
+  },
+  {
+    path: "/proveedores",
+    title: "Proveedores",
+    icon: "icon-delivery-fast",
     class: ""
   },
   /*{

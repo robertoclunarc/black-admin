@@ -8,10 +8,11 @@ import { formatDate } from "@angular/common";
 //models
 import { IProductos, IdetProducto, IdetProductosConMateriales, IDetProductos } from '../../models/productos';
 import { IMoneda } from '../../models/monedas';
-import { ImateriPrima } from '../../models/materiaprima';
+//import { ImateriPrima } from '../../models/materiaprima';
 import { IUnidades } from '../../models/unidades';
 import { IUsuarioSucursal } from '../../models/usuarios';
 import { IMaterialesEnInventario } from "../../models/inventarios";
+import { Iprecios } from "src/app/models/precios";
 
 //services
 import { ProductosService } from '../../services/productos.service';
@@ -23,8 +24,6 @@ import { UnidadesService } from '../../services/unidad.service';
 import { UsuariosService } from '../../services/usuarios.service';
 import { InventarioMateialesService } from '../../services/inventariomateriales.service';
 import { ParametrosService } from '../../services/parametros.service';
-import { Iprecios } from "src/app/models/precios";
-
 
 @Component({
   selector: 'app-productos',
@@ -36,15 +35,18 @@ import { Iprecios } from "src/app/models/precios";
 export class ProductosComponent implements OnInit {
   
   public clicked: boolean = true;
-  public titulos= ['', 'ID','Producto','Marca/Descripcion','Precio','Sucursal'];
+  public titulos= ['', 'ID','Producto','Marca/Descripcion','Precio','Sucursal', 'Fecha'];
   public arrayInventario: IMaterialesEnInventario []=[];
   materialSeleted: IMaterialesEnInventario={};
   
   cantSelected: number=1;
   unidadSelected: string;
   precioCalculado: number;
+  
   subTotal: number=0;
+  totalGastos: number=0;
   modenaSelected: string="";
+  typeMonedaSeleted: IMoneda={};
   ultimoPrecio: Iprecios={}
   public arrayProductosMateriales: IdetProductosConMateriales[]=[];
   public productosMateriales: IdetProductosConMateriales={};
@@ -60,6 +62,7 @@ export class ProductosComponent implements OnInit {
   public userLogeado: string="";
   public nombreUser: string="";
   public sucursalActual: number;
+  public cboMaterialDisabled: boolean=true;
   closeResult = '';
   modalOptions: NgbModalOptions;
 
@@ -76,6 +79,7 @@ export class ProductosComponent implements OnInit {
     private srvInventario: InventarioMateialesService,
     private srvUnidades: UnidadesService,
     private srvPrecios: PreciosService,
+    
     ) { 
 
     this.modalOptions={
@@ -113,11 +117,13 @@ export class ProductosComponent implements OnInit {
 
   private llenarArrayInventarioMateriales(){
     this.arrayInventario=[];
+    
 		this.srvInventario.consultarTodos()
 			.toPromise()
 			.then(async results => {				
 					
 				//this.arrayInventario = results.filter( (i) => {i.fksucursal==this.sucursalActual && i.cantidadAcumulada>0})
+        
         for await (const inv of results){
           if (inv.fksucursal==this.sucursalActual && inv.cantidadAcumulada>0)
             this.arrayInventario.push(inv);
@@ -149,6 +155,7 @@ export class ProductosComponent implements OnInit {
         this.totalItems= this.arrayProductosMateriales.length;
         this.arrayProductosMateriales.sort((a, b ) => b.producto.idProducto - a.producto.idProducto);               
 				this.itemsProductos= this.arrayProductosMateriales.length;
+        //console.log(results);
 			})
 			.catch(err => { console.log(err) });
   }
@@ -157,6 +164,19 @@ export class ProductosComponent implements OnInit {
     
 		this.arrayMonedas = await this.srvMonedas.consultarTodos().toPromise();
 		
+  }
+
+  async selecionarMoneda(e){
+    
+    for await (let m of this.arrayMonedas)
+      if (m.idMoneda==e){
+        this.typeMonedaSeleted=m;
+      }
+      this.modenaSelected=this.typeMonedaSeleted.abrevMoneda;
+      if (this.typeMonedaSeleted.idMoneda!=undefined && this.typeMonedaSeleted.idMoneda.toString()!="")
+        this.cboMaterialDisabled=false;
+      else
+        this.cboMaterialDisabled=true;  
   }
 
   
@@ -178,14 +198,34 @@ export class ProductosComponent implements OnInit {
       }
       
     }
-    this.precioCalculado=Number((factor*this.ultimoPrecio.Precio).toFixed(2));
+    let tipoMoneda: string='';
+    for await (let m of this.arrayMonedas){
+      if (m.idMoneda==this.ultimoPrecio.fkMoneda)
+        tipoMoneda=m.tipoMoneda;
+    }
+
+    let tasa=0;
+    if (this.productosMateriales.producto.tasaDiaProd!=undefined && this.productosMateriales.producto.tasaDiaProd!=0 )
+      tasa=this.productosMateriales.producto.tasaDiaProd;
+    else
+      tasa=1;
+
+      
+      if (this.typeMonedaSeleted.idMoneda==this.ultimoPrecio.fkMoneda){
+        this.precioCalculado=Number((factor*this.ultimoPrecio.Precio).toFixed(2));
+      }else{
+          if (tipoMoneda=='Local')        
+            this.precioCalculado=Number((factor*this.ultimoPrecio.Precio/tasa).toFixed(2));//pasando de local a divisa
+          else
+            this.precioCalculado=Number((factor*this.ultimoPrecio.Precio*tasa).toFixed(2));//pasando de divisa a local
+      }
        
   }
 
   async buscarUltimoPrecio(e){
     
     this.materialSeleted=this.arrayInventario.find((m: IMaterialesEnInventario)=>{ return m.MateriaPrima.idMateriaPrima==e});
-    this.modenaSelected=this.arrayMonedas.find((m: IMoneda)=>{ return m.idMoneda=this.materialSeleted.fkMonedaPrecio1}).abrevMoneda;
+    //this.modenaSelected=this.arrayMonedas.find((m: IMoneda)=>{ return m.idMoneda=this.materialSeleted.fkMonedaPrecio1}).abrevMoneda;
     this.unidadSelected=this.materialSeleted.unidad;
     //console.log(this.materialSeleted)
     await this.srvPrecios.consultarUltimosPreciosMaterial(this.materialSeleted.MateriaPrima.idMateriaPrima)
@@ -214,45 +254,12 @@ export class ProductosComponent implements OnInit {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
     this.nuevo=false;
-    this.productosMateriales={};
-    /*item.materiaPrima
-    item.moneda
-    item.producto*/
-    console.log(item.producto.fechaProduccion);
+    this.productosMateriales={};    
+    
     this.productosMateriales= item;
     this.productosMateriales.producto.fechaProduccion=formatDate(item.producto.fechaProduccion, 'yyyy-MM-dd','en');
-    
-   /* this.compra={};
-    this.registrarCompra.compra = {}; 
-    this.registrarCompra.sucursal = {};
-    this.registrarCompra.moneda = {};
-    this.registrarCompra.proveedor = {};
-    this.registrarCompra.detalles = [];    
-
-    this.compra.idCompra = item.compra.idCompra;
-    this.compra.loginCrea = item.compra.loginCrea;
-    this.compra.fechaCompra = formatDate(item.compra.fechaCompra, 'yyyy-MM-dd','en');    
-    this.compra.fkSucursal = item.sucursal.idSucursal;
-    this.compra.idProveedor = item.proveedor.idProveedor;
-    this.compra.iva = item.compra.iva;
-    this.compra.fkMoneda = item.moneda.idMoneda;
-    this.compra.tasaDia = item.compra.tasaDia;    
-    this.compra.subtotal = item.compra.subtotal;
-    this.compra.montoIva = item.compra.montoIva;
-    this.compra.neto = item.compra.neto;
-
-    this.nombreUser = this.arrayUsuarios.find(us => us.usuario.login==item.compra.loginCrea).usuario.nombres;
-
-    this.registrarCompra.compra = item.compra;    
-    this.registrarCompra.sucursal = item.sucursal;
-    this.registrarCompra.moneda = item.moneda;           
-    this.registrarCompra.compra.fechaCompra = formatDate(item.compra.fechaCompra, 'yyyy-MM-dd','en');
-    this.registrarCompra.detalles = item.detalles;
-    
-    this.detallesCompra = item.detalles;
-    this.detallesCompraOLD = item.detalles;
-    this.itemsDetalles = this.detallesCompra.length;*/
-    
+    this.llenarArrayInventarioMateriales();
+    this.cboMaterialDisabled= this.productosMateriales.producto.fkMoneda !=undefined ? false : true;
   }
 
   private TraerIva(){
@@ -260,9 +267,9 @@ export class ProductosComponent implements OnInit {
 		this.srvParametros.parametrosUltimaFecha()
 			.toPromise()
 			.then(results => {
-        		
+        //console.log(results);	
 				if (typeof results[0].iva == 'number')	
-				  this.producto.iva = results[0].iva;  
+				  this.productosMateriales.producto.iva = results[0].iva;  
         else
           this.producto.iva=0.0;
 				
@@ -294,7 +301,115 @@ export class ProductosComponent implements OnInit {
    this.productosMateriales.producto.fkSucursal=this.arrayUsuarios.find(us => us.usuario.login==this.userLogeado).sucursal.idSucursal;
   }
 
+  public async guardarProducto(){
+    /*if (this.productosMateriales.materiaPrima.length<1){
+      this.showNotification('top', 'center', 'Especificar los Detalles del Producto',4);
+      return;
+    }*/
+    if (this.productosMateriales.producto.descripcionProducto==undefined || this.productosMateriales.producto.descripcionProducto==""){
+      this.showNotification('top', 'center', 'Debe Especificar el nombre del Producto',4);
+      return;
+    }
+
+    if (this.productosMateriales.producto.marcaProducto==undefined || this.productosMateriales.producto.marcaProducto==""){
+      this.showNotification('top', 'center', 'Debe Especificar la Marca una Descripcion',4);
+      return;
+    }
+
+    if (this.productosMateriales.producto.precio==undefined || this.productosMateriales.producto.precio.toString()==""){
+      this.showNotification('top', 'center', 'Debe Especificar el Precio del Producto',4);
+      return;
+    }
+
+    if (this.productosMateriales.producto.montoIva==undefined || this.productosMateriales.producto.montoIva.toString()==""){
+      this.productosMateriales.producto.montoIva=0;      
+    }
+
+    if (this.productosMateriales.producto.iva==undefined || this.productosMateriales.producto.iva.toString()==""){
+      this.productosMateriales.producto.iva=0;      
+    }
+
+    if (this.productosMateriales.producto.tasaDiaProd==undefined || this.productosMateriales.producto.tasaDiaProd.toString()==""){
+      this.showNotification('top', 'center', 'Debe Especificar la Tasa del Dia',4);
+      return;     
+    }
+
+    if (this.productosMateriales.producto.fkMoneda==undefined || this.productosMateriales.producto.fkMoneda.toString()==""){
+      this.showNotification('top', 'center', 'Debe Especificar la Tasa del Dia',4);
+      return;     
+    }
+
+    if(this.nuevo){
+      
+      await this.srvProductos.registrarCabecera(this.productosMateriales.producto)
+      .toPromise()
+      .then(async result => {
+        if (typeof this.srvProductos.nuevo.idProducto == "number"){
+          this.productosMateriales.producto.idProducto=this.srvProductos.nuevo.idProducto;
+          this.showNotification('top', 'center', 'Producto Registrado',2);
+          if (this.productosMateriales.materiaPrima.length>0){ 
+            await this.guardarDetalles(this.productosMateriales.producto.idProducto);
+            this.showNotification('top', 'center', 'Materiales Registrados',2);
+          }
+          //await this.sumarInventario();
+          
+        }      
+        
+        this.llenarArrayProductosMateriales(null, 'null', null, null);
+      });
+      
+      
+    }else{
+
+      this.srvProductos.actualizarCabecera(this.productosMateriales.producto)
+      .toPromise()
+      .then(async result => {
+        if (result){
+          await this.srvProductos.eliminarDetalleTodo(this.productosMateriales.producto.idProducto).toPromise();
+          //await this.restarInventario();
+          if (this.productosMateriales.materiaPrima.length>0){ 
+            await this.guardarDetalles(this.productosMateriales.producto.idProducto);
+            this.showNotification('top', 'center', 'Producto/Materiales Actualizados',2);
+          }
+          
+        }      
+        this.llenarArrayProductosMateriales(null, 'null', null, null);
+      });
+    }
+    this.modalService.dismissAll("close");
+    
+    this.productosMateriales.producto={};
+    this.productosMateriales.moneda={};
+    this.productosMateriales.producto={};
+    this.productosMateriales.materiaPrima=[];
+    //this.productosMateriales.usuarioSucursal={};
+    this.producto={};
+    
+    this.producto.precio= 0;
+    this.producto.montoIva = 0;
+  }
+
+  async guardarDetalles(idProducto: number){  
+    let detalles: IDetProductos={}
+    for await (let det of this.productosMateriales.materiaPrima){ 
+      detalles={        
+        fkProducto: idProducto,
+        fkMateria: det.Materia.idMateriaPrima,
+        cantidad: det.cantidad,
+        unidad: det.unidad,
+        precio: det.precio,
+        moneda: det.moneda
+      }  
+      await this.srvProductos.registrarDetalle(detalles).toPromise();      
+    }
+  }  
+
   addMaterial(){
+    if (this.modenaSelected=="" || this.modenaSelected==undefined){
+      this.showNotification('top', 'center', 'Debe Especificar el Tipo de Moneda',4);
+      return;
+    }
+      
     let detalle:IdetProducto={
       Materia:this.materialSeleted.MateriaPrima,
       cantidad:this.cantSelected,
@@ -305,23 +420,35 @@ export class ProductosComponent implements OnInit {
     this.productosMateriales.materiaPrima.push(detalle);
     this.subTotal+=this.precioCalculado;
     if (this.productosMateriales.producto.fkMoneda!=undefined)
-      this.productosMateriales.moneda.abrevMoneda =this.arrayMonedas.find((m: IMoneda)=>{ return m.idMoneda=this.productosMateriales.producto.fkMoneda}).abrevMoneda;
+      this.productosMateriales.moneda.abrevMoneda =this.arrayMonedas.find((m: IMoneda)=>{ return m.idMoneda==this.productosMateriales.producto.fkMoneda}).abrevMoneda;
     this.materialSeleted={};
     this.materialSeleted.MateriaPrima={}
-    this.modenaSelected="";
+    this.productosMateriales.producto.precio=this.subTotal
     
     this.cantSelected=1;
     this.unidadSelected="";
     this.precioCalculado=0;
-    console.log(this.cboMaterial.nativeElement.selectedIndex);
+   // console.log(this.cboMaterial.nativeElement.selectedIndex);
     //this.cboMaterial.nativeElement.selectedIndex=1
     
-  }
+  } 
 
   public quitDetalle(item: number){
     this.subTotal-=this.productosMateriales.materiaPrima[item].precio;
     this.productosMateriales.materiaPrima.splice(item, 1);    
     
+  }
+
+  calculoMontoIva(){
+    
+    let montoIvaTotal=0;
+    let idMonedaLocal= this.arrayMonedas.find((m: IMoneda)=>{ return m.tipoMoneda=='Local'}).idMoneda;
+    
+    if (this.productosMateriales.producto.fkMoneda==idMonedaLocal && this.productosMateriales.producto.precio!=undefined){
+      montoIvaTotal = (this.productosMateriales.producto.precio * this.productosMateriales.producto.iva/100);
+      
+    }
+    this.productosMateriales.producto.montoIva= montoIvaTotal;
   }
 
   open(content, nuevo: boolean) {
@@ -334,6 +461,61 @@ export class ProductosComponent implements OnInit {
     if (nuevo){
       this.nuevo=nuevo;
       this.registrarNuevo();
+    }
+  }
+
+  public showNotification(from, align, mensaje, color){
+
+    //const color = Math.floor((Math.random() * 5) + 1);
+
+    switch(color){
+      case 1:
+      this.toastr.info('<span class="tim-icons icon-bell-55" [data-notify]="icon"></span> '+mensaje, '', {
+         disableTimeOut: true,
+         closeButton: true,
+         enableHtml: true,
+         toastClass: "alert alert-info alert-with-icon",
+         positionClass: 'toast-' + from + '-' +  align
+       });
+      break;
+      case 2:
+      this.toastr.success('<span class="tim-icons icon-bell-55" [data-notify]="icon"></span> '+mensaje, '', {
+         disableTimeOut: false,
+         closeButton: true,
+         enableHtml: true,
+         toastClass: "alert alert-success alert-with-icon",
+         positionClass: 'toast-' + from + '-' +  align
+       });
+      break;
+      case 3:
+      this.toastr.warning('<span class="tim-icons icon-bell-55" [data-notify]="icon"></span>'+ mensaje, '', {
+         disableTimeOut: true,
+         closeButton: true,
+         enableHtml: true,
+         toastClass: "alert alert-warning alert-with-icon",
+         positionClass: 'toast-' + from + '-' +  align
+       });
+      break;
+      case 4:
+      this.toastr.error('<span class="tim-icons icon-bell-55" [data-notify]="icon"></span>'+mensaje, '', {
+         disableTimeOut: true,
+         enableHtml: true,
+         closeButton: true,
+         toastClass: "alert alert-danger alert-with-icon",
+         positionClass: 'toast-' + from + '-' +  align
+       });
+       break;
+       case 5:
+       this.toastr.show('<span class="tim-icons icon-bell-55" [data-notify]="icon"></span>'+mensaje, '', {
+          disableTimeOut: true,
+          closeButton: true,
+          enableHtml: true,
+          toastClass: "alert alert-primary alert-with-icon",
+          positionClass: 'toast-' + from + '-' +  align
+        });
+      break;
+      default:
+      break;
     }
   }
 

@@ -1,4 +1,4 @@
-import { IProductos, IdetProducto, IdetProductosConMateriales } from '../models/productos';
+import { IProductos, IdetProducto, IdetProductosConMateriales, IDetProductos } from '../models/productos';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
@@ -10,7 +10,7 @@ import { catchError, tap } from 'rxjs/operators';
 })
 export class ProductosService {
 	private url: string;	
-	
+	nuevo: IProductos={};
 	constructor(private http: HttpClient) {
 		this.url = environment.productosUrl
 	}
@@ -46,13 +46,13 @@ export class ProductosService {
 	
 	registrarCabecera(cabecera: IProductos) {
 		return this.http.post<IProductos>(this.url + 'insertar', cabecera).pipe(
-			tap(result => { this.log(`Producto insertado`) }),
+			tap(result => { this.nuevo=result; this.log(`Producto insertado`) }),
 			catchError(this.handleError('registrar producto', []))
 		);
-	}
+	}	
 
-    registrarDetalle(detalle: IdetProducto) {
-		return this.http.post<IdetProducto>(this.url + 'detalles/insertar', detalle).pipe(
+    registrarDetalle(detalle: IDetProductos) {
+		return this.http.post<IDetProductos>(this.url + 'insertar/detalles', detalle).pipe(
 			tap(result => { this.log(`detalles producto insertada`) }),
 			catchError(this.handleError('registrar detalle productos', []))
 		);
@@ -68,7 +68,7 @@ export class ProductosService {
 		);
 	}
 
-    actualizarDetalle(detalle: IdetProducto) {
+    actualizarDetalle(detalle: IDetProductos) {
 		const url = `${this.url}detalles/actualizar/${detalle.idDetProducto}`;
 
 		return this.http.put(url, detalle).pipe(
